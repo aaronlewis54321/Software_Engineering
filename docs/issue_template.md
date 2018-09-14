@@ -1,4 +1,4 @@
-“In order to <achieve some business value>, As a <stakeholder type> I want <some new system feature>”
+<Place this line as issue title>“In order to <achieve some business value>, As a <stakeholder type> I want <some new system feature>”
 
 
 **User Story**
