@@ -32,12 +32,17 @@ public class View extends Application {
     Button btnApplyChanges;
     Button btnRevertChanges;
     Button btnExportCSV;
+    Model m;
+    Controller c;
     
     
     
     
     @Override
     public void start(Stage primaryStage) {
+        m = new Model();
+        c = new Controller();
+        
         Button btn = new Button();
         btn.setText("Placeholder");
         
@@ -60,10 +65,17 @@ public class View extends Application {
         
         TableView table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
+        firstNameCol.setPrefWidth(100);
         TableColumn lastNameCol = new TableColumn("Last Name");
+        lastNameCol.setPrefWidth(100);
+        TableColumn phoneNumCol = new TableColumn("Phone Number");
+        phoneNumCol.setPrefWidth(100);
         TableColumn emailCol = new TableColumn("Email");
+        emailCol.setPrefWidth(100);
+        TableColumn isActiveCol = new TableColumn("Active User");
+        isActiveCol.setPrefWidth(100);
         
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
+        table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, isActiveCol);
         
         BorderPane border = new BorderPane();
         border.setCenter(table);
