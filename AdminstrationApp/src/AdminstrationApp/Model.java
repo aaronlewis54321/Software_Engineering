@@ -9,13 +9,23 @@
 package AdminstrationApp;
 
 import java.beans.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
  * @author alewis91
  */
+
 public class Model implements Serializable {
     
     public static final String PROP_SAMPLE_PROPERTY = "sampleProperty";
@@ -27,6 +37,10 @@ public class Model implements Serializable {
     public ArrayList<Person> people;
     
     public ArrayList<Group> groups;
+    
+    public final String GET_USERS_URL = "http://emoji-survey.me/auth/users";
+    
+    private static final String USER_AGENT = "Mozilla/5.0";
     
     public Model() {
         propertySupport = new PropertyChangeSupport(this);
@@ -86,4 +100,37 @@ public class Model implements Serializable {
         return people;
     }
     
+    
+    
+    public void testGetUsers() throws IOException
+    {
+        
+        String token = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
+        URL obj = new URL(GET_USERS_URL);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Token " + token;
+        con.setRequestMethod("GET");
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("Accept", "application/json");
+        int responseCode = con.getResponseCode();
+	System.out.println("GET Response Code :: " + responseCode);
+	     if (responseCode == HttpURLConnection.HTTP_OK) { // success
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+		con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		    }
+		in.close();
+
+	        // print result
+	        System.out.println(response.toString());
+		} else {
+			System.out.println("GET request not worked");
+		}
+            
+    } 
 }

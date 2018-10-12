@@ -5,8 +5,11 @@
  */
 package AdminstrationApp;
 
+import java.io.IOException;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -104,6 +107,12 @@ public class View extends Application {
         primaryStage.setTitle("Emoji Administration");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        try {
+            m.testGetUsers();
+        } catch (IOException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -111,6 +120,7 @@ public class View extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        
     }
     
 }
