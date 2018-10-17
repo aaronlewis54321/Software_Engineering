@@ -17,8 +17,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -105,14 +107,39 @@ public class View extends Application {
         
         
         BorderPane border = new BorderPane();
+        table.setEditable(true);
+        table.getSelectionModel().cellSelectionEnabledProperty().set(true);
+        table.setOnKeyPressed(event -> {
+            if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
+                //This code should determine the current table position, and edit that position with input
+                System.out.println("test");
+            }
+            else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.TAB)
+            {
+               table.getSelectionModel().selectNext();
+               event.consume();
+            }
+            else if (event.getCode() == KeyCode.LEFT) {
+            // work around due to
+            // TableView.getSelectionModel().selectPrevious() due to a bug
+            // stopping it from working on
+            // the first column in the last row of the table
+        }
+    });
+        
+        
+        
+        
+        
+        
         border.setCenter(table);
         
-        btn.setMinWidth(100);
+        btn.setMinWidth(130);
         border.setLeft(btn);
         
         
         VBox vboxRight = new VBox();
-        vboxRight.setPrefWidth(100);
+        vboxRight.setPrefWidth(130);
         
         Button[] options = {btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
         for (int i=0; i<options.length; i++) {
@@ -126,7 +153,7 @@ public class View extends Application {
         //border.setRight(border.getRight(),btnEditUsers);
         //root.getChildren().add(table);
         
-        Scene scene = new Scene(border, 950, 600);
+        Scene scene = new Scene(border, 1013, 600);
         
         primaryStage.setTitle("Emoji Administration");
         primaryStage.setScene(scene);
