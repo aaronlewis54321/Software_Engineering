@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -68,17 +69,29 @@ public class View extends Application {
         
         TableView table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
-        firstNameCol.setPrefWidth(100);
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
+        firstNameCol.setPrefWidth(150);
         TableColumn lastNameCol = new TableColumn("Last Name");
-        lastNameCol.setPrefWidth(100);
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("LastName"));
+        lastNameCol.setPrefWidth(150);
         TableColumn phoneNumCol = new TableColumn("Phone Number");
-        phoneNumCol.setPrefWidth(100);
+        phoneNumCol.setCellValueFactory(new PropertyValueFactory<>("PhoneNumber"));
+        phoneNumCol.setPrefWidth(150);
         TableColumn emailCol = new TableColumn("Email");
-        emailCol.setPrefWidth(100);
-        TableColumn isActiveCol = new TableColumn("Active User");
-        isActiveCol.setPrefWidth(100);
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("Email"));
+        emailCol.setPrefWidth(150);
+        TableColumn scheduleCol = new TableColumn("Schedule");
+        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("Schedule"));
+        scheduleCol.setPrefWidth(150);
         
-        table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, isActiveCol);
+        table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
+        //table.getItems().add(m.getPeople());
+        
+        for(Person p : m.getPeople())
+        {
+            table.getItems().add(p);
+        }
+        
         
         BorderPane border = new BorderPane();
         border.setCenter(table);
@@ -102,7 +115,7 @@ public class View extends Application {
         //border.setRight(border.getRight(),btnEditUsers);
         //root.getChildren().add(table);
         
-        Scene scene = new Scene(border, 700, 400);
+        Scene scene = new Scene(border, 950, 400);
         
         primaryStage.setTitle("Emoji Administration");
         primaryStage.setScene(scene);

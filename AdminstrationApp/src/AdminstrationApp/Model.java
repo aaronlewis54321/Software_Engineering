@@ -253,7 +253,7 @@ public class Model implements Serializable {
         
     }
     
-    public ArrayList getPeople()
+    public ArrayList<Person> getPeople()
     {
         return people;
     }
