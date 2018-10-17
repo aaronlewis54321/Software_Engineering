@@ -3,7 +3,6 @@
  * WritePeopleToDatabse method needs to be implemented
  * readGroupsFromDatabase method needs to be implemented
  * writeGroupsToDatabase method needs to be implemented
- * writeResponseToCSV method needs to be implemented
  */
 package AdminstrationApp;
 
@@ -12,6 +11,8 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.beans.*;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 /**
@@ -42,6 +44,10 @@ public class Model implements Serializable {
     public ArrayList<Group> groups;
     
     public final String GET_USERS_URL = "http://emoji-survey.me/auth/users";
+    
+    public final String GET_RESPONSES_URL = "http://emoji-survey.me/responses";
+    
+    public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
     
     private static final String USER_AGENT = "Mozilla/5.0";
     
@@ -74,10 +80,9 @@ public class Model implements Serializable {
     //This method is where the code that reads the people from the database and
     //loads each one into people objects that are stored as an arraylist.
     public void getPeopleFromDatabase() throws IOException{
-         String token = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
         URL obj = new URL(GET_USERS_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        String auth = "Token " + token;
+        String auth = "Token " + TOKEN;
         con.setRequestMethod("GET");
         con.setRequestProperty ("Authorization", auth);
         con.setRequestProperty("User-Agent", USER_AGENT);
@@ -118,6 +123,11 @@ public class Model implements Serializable {
                         a.add(response.substring(x, i));
                         x=i+1;
                     }
+                    if(response.charAt(i) == ']')
+                    {
+                        a.add(response.substring(x, i));
+                        break;
+                    }
                 }
                 
                 
@@ -153,7 +163,93 @@ public class Model implements Serializable {
     //This method uses the CSVUtils class to write response data to a CSV file.
     //For example on usage of CSVUtils class, see Sprint1/Tester/Research how data 
     //will be exported to CSV in the project github.
-    public void writeResponseToCSV() {
+    public void writeResponseToCSV() throws IOException{
+        URL obj = new URL(GET_RESPONSES_URL);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Token " + TOKEN;
+        con.setRequestMethod("GET");
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("Accept", "application/json");
+        int responseCode = con.getResponseCode();
+	//System.out.println("GET Response Code :: " + responseCode);
+	     if (responseCode == HttpURLConnection.HTTP_OK) { // success
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+		con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		    }
+		in.close();
+               
+                
+                String m = response.toString();
+                
+                System.out.println(m);
+                
+                ArrayList<String> a = new ArrayList<String>();
+                int x = 0;
+                boolean hitBracket = false;
+                for(int i = 0; i <response.length();i++)
+                {
+                    if(response.charAt(i) == '[')
+                    {
+                        hitBracket = true;
+                        x = i+1;
+                    }
+                    if(!hitBracket)
+                    {
+                        continue;
+                    }
+                    if(response.length() -1 != i && response.charAt(i) == ',' && response.charAt(i-1) == '}' && response.charAt(i+1) == '{' )
+                    {
+                        a.add(response.substring(x, i));
+                        x=i+1;
+                    }
+                    if(response.charAt(i) == ']')
+                    {
+                        a.add(response.substring(x, i));
+                        break;
+                    }
+                }
+                
+                
+                Gson g = new Gson();
+                ArrayList<Response> responses = new ArrayList<Response>();
+                for(int i = 0; i < a.size(); i++)
+                {
+                    Response p = g.fromJson(a.get(i), Response.class);
+                    responses.add(p);
+                }
+                
+                for(Response p : responses)
+                {
+                    System.out.println(p);
+                }
+                
+                
+                
+                
+                String localDir = System.getProperty("user.dir");
+                BufferedWriter writer = new BufferedWriter(new FileWriter(localDir + "\\src\\Resources\\responses.csv"));
+                writer.write("emoji, timestamp");
+                writer.newLine();
+                for(int i = 0; i< responses.size(); i++)
+                {
+                   writer.write(responses.get(i)+"");
+                   writer.newLine();
+                }
+                writer.flush();
+	       
+                } 
+             
+             
+                else {
+			System.out.println("GET request not worked");
+		}
+            
         
     }
     
