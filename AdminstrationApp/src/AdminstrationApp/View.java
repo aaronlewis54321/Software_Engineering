@@ -40,6 +40,7 @@ public class View extends Application {
     Controller c;
     
     
+
     
     
     @Override
@@ -52,19 +53,29 @@ public class View extends Application {
         
         Button btnAddUsers = new Button();
         btnAddUsers.setText("Add Users");
-        //btnAddUsers.setOnAction(e -> c.doStuff);
+        btnAddUsers.setOnAction(e1 -> c.btnAddUsersAction());
         
         Button btnEditGroups = new Button();
         btnEditGroups.setText("Edit Groups");
+        btnEditGroups.setOnAction(e2 -> c.btnEditGroupsAction());
         
         Button btnApplyChanges = new Button();
         btnApplyChanges.setText("Apply Changes");
+        btnApplyChanges.setOnAction(e3 -> c.btnApplyChangesAction());
         
         Button btnRevertChanges = new Button();
         btnRevertChanges.setText("Revert Changes");
+        btnRevertChanges.setOnAction(e4 -> c.btnRevertChangesAction());
         
         Button btnExportCSV = new Button();
         btnExportCSV.setText("Export Data");
+        btnExportCSV.setOnAction(e5 -> {
+            try {
+                c.btnExportDataAction();
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         
         
         TableView table = new TableView();
@@ -115,22 +126,19 @@ public class View extends Application {
         //border.setRight(border.getRight(),btnEditUsers);
         //root.getChildren().add(table);
         
-        Scene scene = new Scene(border, 950, 400);
+        Scene scene = new Scene(border, 950, 600);
         
         primaryStage.setTitle("Emoji Administration");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-        
-        m.writeResponseToCSV();
         
     }
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        launch(args);
+        public static void main(String[] args) {
+         launch(args);
         
     }
     
