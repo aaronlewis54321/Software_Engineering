@@ -42,7 +42,7 @@ public class View extends Application {
     
     
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         m = new Model();
         c = new Controller();
         
@@ -108,11 +108,6 @@ public class View extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        try {
-            m.testGetUsers();
-        } catch (IOException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**

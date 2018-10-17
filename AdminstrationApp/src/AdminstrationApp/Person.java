@@ -10,40 +10,47 @@ package AdminstrationApp;
  * @author alewis91
  */
 public class Person {
-    String firstName, lastName, phoneNumber, email;
+    String first_name, last_name, phone_number, email, birth_date;
     boolean isActive;
     
-    public Person (String f, String l, String p, String e, boolean isAct)
+    public Person (String f, String l, String p, String e, String b)
     {
-        firstName = f;
-        lastName = l;
-        phoneNumber = p;
+        first_name = f;
+        last_name = l;
+        phone_number = p;
         email = e;
-        isActive=isAct;
+        birth_date = b;
     }
+    
+    public String toString()
+    {
+        return "Name: " + first_name + " " + last_name + ", Phone Number: " + phone_number + ", Email: " + email + ", Birthdate: " + birth_date;
+    }
+    
+    
     public void setFirstName(String s)
     {
-        firstName = s;
+        first_name = s;
     }
     public String getFirstName()
     {
-        return firstName;
+        return first_name;
     }
     public void setLastName(String s)
     {
-        lastName = s;
+        last_name = s;
     }
     public String getLastName()
     {
-        return lastName;
+        return last_name;
     }
     public void setPhoneNumber(String s)
     {
-        phoneNumber = s;
+        phone_number = s;
     }
     public String getPhoneNumber()
     {
-        return phoneNumber;
+        return phone_number;
     }
     public void setEmail(String s)
     {
@@ -52,5 +59,13 @@ public class Person {
     public String getEmail()
     {
         return email;
+    }
+    public void setBirthDate(String s)
+    {
+        birth_date = s;
+    }
+    public String getBirthDate()
+    {
+        return birth_date;
     }
 }
