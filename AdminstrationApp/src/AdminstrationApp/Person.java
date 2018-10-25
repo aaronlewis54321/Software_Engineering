@@ -10,16 +10,17 @@ package AdminstrationApp;
  * @author alewis91
  */
 public class Person {
-    String first_name, last_name, phone_number, email, birth_date;
+    String first_name, last_name, phone_number, email, birth_date, id;
     boolean isActive;
     
-    public Person (String f, String l, String p, String e, String b)
+    public Person (String f, String l, String p, String e, String b, String i)
     {
         first_name = f;
         last_name = l;
         phone_number = p;
         email = e;
         birth_date = b;
+        id = i;
     }
     
     public String toString()
@@ -67,5 +68,9 @@ public class Person {
     public String getBirthDate()
     {
         return birth_date;
+    }
+    public String getUserID()
+    {
+        return id;
     }
 }

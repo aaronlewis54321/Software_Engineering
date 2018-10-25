@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.net.HttpURLConnection;
@@ -46,6 +47,8 @@ public class Model implements Serializable {
     public final String GET_USERS_URL = "http://emoji-survey.me/auth/users";
     
     public final String GET_RESPONSES_URL = "http://emoji-survey.me/responses";
+    
+    public final String PUT_USERS_URL = "http://emoji-survey.me/auth/users";
     
     public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
     
@@ -146,9 +149,46 @@ public class Model implements Serializable {
     }
     
     //This method writes all people with changed elements to the database
-    public void writePeopleToDatabase() {
+    public void writePeopleToDatabase(ArrayList<Person> p) throws IOException {
         
-    }
+        String auth = "Token " + TOKEN;
+        for(Person pers : p)
+        {
+           URL obj = new URL(PUT_USERS_URL + "/" + pers.getUserID());
+           System.out.println(PUT_USERS_URL + "/" + pers.getUserID());
+           HttpURLConnection con = (HttpURLConnection) obj.openConnection();          
+           con.setRequestMethod("PUT");
+           con.setRequestProperty ("Authorization", auth);
+           con.setRequestProperty("User-Agent", USER_AGENT);
+           con.setRequestProperty("Accept", "application/json");
+           con.setRequestProperty("Content-Type", "application/json");
+           con.setDoOutput(true);
+           OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+           out.write("{\"last_name\" : \"nameTest\"}");
+           //System.out.println("{\"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\", \"first_name\" : \"firstname\", \"birth_date\" : \"05/05/1998\","
+                   //+ " \"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\"}");
+           out.close();
+           System.out.println(con.getResponseCode());
+           int responseCode = con.getResponseCode();
+           if (responseCode == HttpURLConnection.HTTP_OK) { // success
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+		con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		    }
+		in.close();
+               
+                System.out.println(response);
+           }
+           
+           else {
+			System.out.println("PUT request not worked");
+		}       
+      }
+   }
 
     //This method goes to our local database and reads in all existing groups
     private void ReadGroupsFromDatabase() {

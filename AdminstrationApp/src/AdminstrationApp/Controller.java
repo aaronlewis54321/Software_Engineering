@@ -17,9 +17,9 @@ public class Controller {
     Model m;
     
     
-    public Controller() throws IOException
+    public Controller(Model model) throws IOException
     {
-        m = new Model();
+        m = model;
     }
     
     
@@ -48,6 +48,18 @@ public class Controller {
     public void btnExportDataAction() throws IOException {
         m.writeResponseToCSV();
     }    
+
+    void btnSubmitAction() {
+        
+    }
+
+    void btnRefreshAction() {
+        
+    }
+
+    void btnHelpAction() {
+        
+    }
 
     
 }
