@@ -299,6 +299,17 @@ public class Model implements Serializable {
     }
     
     
+    
+    public void scheduleUsers(ArrayList<Integer> people)
+    {
+        
+    }
+    
+    public void makeUsersInactive(ArrayList<Integer> people)
+    {
+        
+    }
+    
  /*   
     public void testGetUsers() throws IOException
     {

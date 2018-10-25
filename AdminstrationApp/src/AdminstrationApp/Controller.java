@@ -49,8 +49,11 @@ public class Controller {
         m.writeResponseToCSV();
     }    
 
-    void btnSubmitAction() {
-        
+    void btnSubmitAction(View v) {
+        v.determineScheduledUsers();
+        m.scheduleUsers(v.getScheduledUsers());
+        m.makeUsersInactive(v.getScheduledUsers());
+        btnRefreshAction();
     }
 
     void btnRefreshAction() {

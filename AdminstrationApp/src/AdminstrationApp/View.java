@@ -45,6 +45,7 @@ public class View extends Application {
     Button btnExportCSV;
     Model m;
     Controller c;
+    ArrayList<Integer> scheduledUsers;
     
     
 
@@ -179,7 +180,7 @@ public class View extends Application {
         //submitArea.setHgap(100);
         Button btnSubmit = new Button("Submit");
         btnSubmit.setPrefWidth(100);
-        btnSubmit.setOnAction(e -> c.btnSubmitAction());
+        btnSubmit.setOnAction(e -> c.btnSubmitAction(this));
         TextField txtSchedule = new TextField();
         txtSchedule.setPrefWidth(300);
         Label lblSchedule = new Label("Schedule: ");
@@ -203,6 +204,15 @@ public class View extends Application {
         public static void main(String[] args) {
          launch(args);
          
+        
+    }
+
+    ArrayList<Integer> getScheduledUsers() {
+        return scheduledUsers;
+    }
+
+    void determineScheduledUsers() {
+        
         
     }
     
