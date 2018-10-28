@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,6 +50,8 @@ public class Model implements Serializable {
     public final String GET_RESPONSES_URL = "http://emoji-survey.me/responses";
     
     public final String PUT_USERS_URL = "http://emoji-survey.me/auth/users";
+    
+    public final String POST_SCHEDULE_URL = "http://emoji-survey.me/schedule/";
     
     public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
     
@@ -299,6 +302,49 @@ public class Model implements Serializable {
     }
     
     
+//static {
+//        ConsoleHandler handler = new ConsoleHandler();
+//        handler.setLevel(Level.ALL);
+//        Logger log = LogManager.getLogManager().getLogger("");
+//        log.addHandler(handler);
+//        log.setLevel(Level.ALL);
+//    }
+//This method creates HTTP connection for POST (creating schedule variable/data)
+    public void writeScheduleToDatabase() throws IOException {
+        URL url = new URL(POST_SCHEDULE_URL);
+
+        //postConn, url obj to POST schedule
+        HttpURLConnection postConn = (HttpURLConnection) url.openConnection();
+        String auth = "Token " + TOKEN;
+        postConn.setRequestMethod("POST");
+        postConn.setRequestProperty("Authorization", auth);
+        postConn.setRequestProperty("Content-Type", "application/json");
+        postConn.setRequestProperty("Accept", "application/json");
+        postConn.setDoOutput(true);
+        postConn.setDoInput(true);
+        /**
+         * POSTing *
+         */
+        OutputStream output = postConn.getOutputStream();
+        OutputStreamWriter outWriter = new OutputStreamWriter(output, "UTF-8");
+        postConn.connect();
+        outWriter.write("{  \"send_at\": \"2018-10-24T17:12:43.640Z\",  \"message\": 1,  \"users\": [1]}");
+        outWriter.flush();
+        outWriter.close();
+
+        int status = postConn.getResponseCode();//this cannot be invoked before data stream is ready when performing HTTP POST
+        if (status != 201) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(postConn.getInputStream()));
+            String content = br.readLine();
+            System.out.println(content);
+
+        } else {
+            System.out.println("Invalid HTTP response status "
+                    + "code " + status + " from web service server.");
+        }
+
+    }
+
     
     public void scheduleUsers(ArrayList<Integer> people)
     {
