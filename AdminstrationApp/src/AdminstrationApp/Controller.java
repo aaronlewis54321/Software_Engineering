@@ -51,13 +51,15 @@ public class Controller {
 
     void btnSubmitAction(View v) throws IOException {
         v.determineScheduledUsers();
-        m.scheduleUsers(v.getScheduledUsers());
+        m.scheduleUsers(v.getScheduledUsers(), v.getScheduleTime());
         m.makeUsersInactive(v.getScheduledUsers());
-        btnRefreshAction();
+        btnRefreshAction(v);
+        v.clearScheduledUsers();
+        //System.out.println(v.table.getSelectionModel().getSelectedItems());
     }
 
-    void btnRefreshAction() {
-        
+    void btnRefreshAction(View v) {
+        v.refreshTable();
     }
 
     void btnHelpAction() {

@@ -58,7 +58,7 @@ public class Model implements Serializable {
         propertySupport = new PropertyChangeSupport(this);
         people = new ArrayList<Person>();
         getPeopleFromDatabase();
-        ReadGroupsFromDatabase();
+        //ReadGroupsFromDatabase();
     }
 
     public String getSampleProperty() {
@@ -124,11 +124,10 @@ public class Model implements Serializable {
                     break;
                 }
             }
-
             Gson g = new Gson();
             for (int i = 0; i < a.size(); i++) {
-                Person p = g.fromJson(a.get(i), Person.class);
-                people.add(p);
+                PersonGSON p = g.fromJson(a.get(i), PersonGSON.class);
+                people.add(new Person(p.first_name, p.last_name, p.phone_number, p.email, p.birth_date, p.id));
             }
 
         } else {
@@ -322,16 +321,24 @@ public class Model implements Serializable {
     }
 
     //test for writing schedule to database, need to modify to alter time/message based on controllers
-    public void scheduleUsers(ArrayList<Integer> people) throws IOException {
+    public void scheduleUsers(ArrayList<Integer> people, String time) throws IOException {
 
         Model test = new Model();
-        Schedule schedule = new Schedule("2018-10-24T17:12:43.640Z", 1, people);
+        Schedule schedule = new Schedule(time, 1, people);
         test.writeScheduleToDatabase(schedule);
 
     }
 
+    ArrayList<Integer> inactiveUsers = new ArrayList<Integer>();
     public void makeUsersInactive(ArrayList<Integer> people) {
-
+        for(Integer p : people)
+        {
+            inactiveUsers.add(p);
+        }
+    }
+    public ArrayList<Integer> getInactiveUsers()
+    {
+        return inactiveUsers;
     }
 
     /*   

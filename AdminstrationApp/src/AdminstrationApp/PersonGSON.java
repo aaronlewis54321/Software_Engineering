@@ -5,18 +5,17 @@
  */
 package AdminstrationApp;
 
-import javafx.scene.control.CheckBox;
+import java.awt.Checkbox;
 
 /**
  *
  * @author alewis91
  */
-public class Person {
+public class PersonGSON {
     String first_name, last_name, phone_number, email, birth_date, id;
     boolean isActive;
-    CheckBox checkBox;
     
-    public Person (String f, String l, String p, String e, String b, String i)
+    public PersonGSON (String f, String l, String p, String e, String b, String i)
     {
         first_name = f;
         last_name = l;
@@ -24,7 +23,6 @@ public class Person {
         email = e;
         birth_date = b;
         id = i;
-        checkBox = new CheckBox();
     }
     
     public String toString()
@@ -77,8 +75,6 @@ public class Person {
     {
         return id;
     }
-    public CheckBox getCheckBox()
-    {
-        return checkBox;
-    }
+
 }
+

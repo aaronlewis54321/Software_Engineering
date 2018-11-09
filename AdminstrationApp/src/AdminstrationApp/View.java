@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -46,6 +47,10 @@ public class View extends Application {
     Model m;
     Controller c;
     ArrayList<Integer> scheduledUsers;
+    TableView table;
+    BorderPane border;
+    ArrayList<Person> people;
+    TextField txtSchedule;
     
     
 
@@ -55,6 +60,9 @@ public class View extends Application {
     public void start(Stage primaryStage) throws IOException {
         m = new Model();
         c = new Controller(m);
+        scheduledUsers = new ArrayList<Integer>();
+        people = new ArrayList<Person>();
+        
         
         
         Person l = new Person("", "", "", "","", "4");
@@ -83,7 +91,7 @@ public class View extends Application {
         
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
-        btnRefresh.setOnAction(e -> c.btnRefreshAction());
+        btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
         Button btnHelp = new Button("Help");
         btnHelp.setOnAction(e -> c.btnHelpAction());
         
@@ -98,7 +106,7 @@ public class View extends Application {
         });
         
         
-        TableView table = new TableView();
+        table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
         firstNameCol.setPrefWidth(176);
@@ -112,20 +120,24 @@ public class View extends Application {
         emailCol.setCellValueFactory(new PropertyValueFactory<>("Email"));
         emailCol.setPrefWidth(176);
         TableColumn scheduleCol = new TableColumn("Schedule");
-        scheduleCol.setCellFactory( tc -> new CheckBoxTableCell<>());
-        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("Schedule"));
+        //scheduleCol.setCellFactory( tc -> new CheckBoxTableCell<>());
+        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
+        scheduleCol.setStyle("-fx-alignment: CENTER;");
         scheduleCol.setPrefWidth(176);
+        
         
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());
         
         for(Person p : m.getPeople())
         {
+            if(!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID())))
             table.getItems().add(p);
+            people.add(p);
         }
         
         
-        BorderPane border = new BorderPane();
+        border = new BorderPane();
         table.setEditable(true);
         /*
         table.getSelectionModel().cellSelectionEnabledProperty().set(true);
@@ -187,7 +199,7 @@ public class View extends Application {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        TextField txtSchedule = new TextField();
+        txtSchedule = new TextField();
         txtSchedule.setPrefWidth(300);
         Label lblSchedule = new Label("Schedule: ");
         lblSchedule.setPrefHeight(30);
@@ -216,10 +228,59 @@ public class View extends Application {
     ArrayList<Integer> getScheduledUsers() {
         return scheduledUsers;
     }
+    void clearScheduledUsers() {
+        scheduledUsers.clear();
+    }
 
     void determineScheduledUsers() {
+        //scheduledUsers.add(Integer.parseInt(((Person)table.getSelectionModel().getSelectedItems()).getUserID()));
+        //scheduledUsers.add(1);
+        //scheduledUsers.add(2);
         
+        for(Person p : people)
+        {
+            if(p.getCheckBox().isSelected())
+            {
+                scheduledUsers.add(Integer.parseInt(p.getUserID()));
+            }
+        }
         
+    }
+    
+    void refreshTable(){
+        table = new TableView();
+        people = new ArrayList<Person>();
+        TableColumn firstNameCol = new TableColumn("First Name");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
+        firstNameCol.setPrefWidth(176);
+        TableColumn lastNameCol = new TableColumn("Last Name");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("LastName"));
+        lastNameCol.setPrefWidth(176);
+        TableColumn phoneNumCol = new TableColumn("Phone Number");
+        phoneNumCol.setCellValueFactory(new PropertyValueFactory<>("PhoneNumber"));
+        phoneNumCol.setPrefWidth(176);
+        TableColumn emailCol = new TableColumn("Email");
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("Email"));
+        emailCol.setPrefWidth(176);
+        TableColumn scheduleCol = new TableColumn("Schedule");
+        scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
+        scheduleCol.setStyle("-fx-alignment: CENTER;");
+        scheduleCol.setPrefWidth(176);
+        
+        table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
+        //table.getItems().add(m.getPeople());
+        
+        //System.out.println(m.getInactiveUsers().contains(Integer.parseInt("1")));
+        for(Person p : m.getPeople())
+        {
+            if(!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID())))
+            table.getItems().add(p);
+            people.add(p);
+        }
+        border.setCenter(table);
+    }
+    String getScheduleTime(){
+        return txtSchedule.getText();
     }
     
 }
