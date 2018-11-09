@@ -180,7 +180,13 @@ public class View extends Application {
         //submitArea.setHgap(100);
         Button btnSubmit = new Button("Submit");
         btnSubmit.setPrefWidth(100);
-        btnSubmit.setOnAction(e -> c.btnSubmitAction(this));
+        btnSubmit.setOnAction(e -> {
+            try {
+                c.btnSubmitAction(this);
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         TextField txtSchedule = new TextField();
         txtSchedule.setPrefWidth(300);
         Label lblSchedule = new Label("Schedule: ");

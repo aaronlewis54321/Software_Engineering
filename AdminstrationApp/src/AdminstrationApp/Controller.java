@@ -49,7 +49,7 @@ public class Controller {
         m.writeResponseToCSV();
     }    
 
-    void btnSubmitAction(View v) {
+    void btnSubmitAction(View v) throws IOException {
         v.determineScheduledUsers();
         m.scheduleUsers(v.getScheduledUsers());
         m.makeUsersInactive(v.getScheduledUsers());
