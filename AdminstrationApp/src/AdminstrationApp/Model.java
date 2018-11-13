@@ -19,9 +19,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +42,8 @@ public class Model implements Serializable {
 
     public ArrayList<Person> people;
 
+    public static boolean postSuccessful;
+
     public ArrayList<Group> groups;
 
     public final String GET_USERS_URL = "http://emoji-survey.me/auth/users";
@@ -53,6 +57,7 @@ public class Model implements Serializable {
     public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
 
     private static final String USER_AGENT = "Mozilla/5.0";
+    boolean getPostBoolean;
 
     public Model() throws IOException {
         propertySupport = new PropertyChangeSupport(this);
@@ -152,7 +157,7 @@ public class Model implements Serializable {
             con.setDoOutput(true);
             OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
             out.write("{\"last_name\" : \"nameTest\"}");
-           //System.out.println("{\"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\", \"first_name\" : \"firstname\", \"birth_date\" : \"05/05/1998\","
+            //System.out.println("{\"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\", \"first_name\" : \"firstname\", \"birth_date\" : \"05/05/1998\","
             //+ " \"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\"}");
             out.close();
             System.out.println(con.getResponseCode());
@@ -273,156 +278,95 @@ public class Model implements Serializable {
 //        log.addHandler(handler);
 //        log.setLevel(Level.ALL);
 //    }
-    
 //This method takes a schedule as input and writes it to the database
-    public void writeScheduleToDatabase(Schedule schedule) throws IOException {
+    public void writeScheduleToDatabase(Schedule schedule) {
+        postSuccessful = false;
 
-        URL url = new URL(POST_SCHEDULE_URL);
+        try {
 
-        //postConn, url obj to POST schedule
-        HttpURLConnection postConn = (HttpURLConnection) url.openConnection();
-        String auth = "Token " + TOKEN;
-        postConn.setRequestMethod("POST"); //implicitly declared when setDoOutput(true)
-        postConn.setRequestProperty("Authorization", auth);
-        postConn.setRequestProperty("Content-Type", "application/json");
-        postConn.setRequestProperty("Accept", "application/json");
-        postConn.setDoOutput(true);
-        postConn.setDoInput(true);
+            URL url = new URL(POST_SCHEDULE_URL);
 
-        
-        Gson gson = new GsonBuilder().create();
-        String scheduleJson = gson.toJson(schedule);
+            //postConn, url obj to POST schedule
+            HttpURLConnection postConn = (HttpURLConnection) url.openConnection();
+            String auth = "Token " + TOKEN;
+            postConn.setRequestMethod("POST"); //implicitly declared when setDoOutput(true)
+            postConn.setRequestProperty("Authorization", auth);
+            postConn.setRequestProperty("Content-Type", "application/json");
+            postConn.setRequestProperty("Accept", "application/json");
+            postConn.setDoOutput(true);
+            postConn.setDoInput(true);
+
+            Gson gson = new GsonBuilder().create();
+            String scheduleJson = gson.toJson(schedule);
 //        System.out.println(scheduleJson);
 
-        /**
-         * POSTing *
-         */
-        OutputStream output = postConn.getOutputStream();
-        OutputStreamWriter outWriter = new OutputStreamWriter(output, "UTF-8");
-        postConn.connect();
+            /**
+             * POSTing *
+             */
+            OutputStream output = postConn.getOutputStream();
+            OutputStreamWriter outWriter = new OutputStreamWriter(output, "UTF-8");
+            postConn.connect();
 
 //            outWriter.write("{  \"send_at\": \"2018-10-24T17:12:43.640Z\",  \"message\": 1,  \"users\": [1]}");
-        outWriter.write(scheduleJson);
-        outWriter.flush();
+            outWriter.write(scheduleJson);
+            outWriter.flush();
 
-        int status = postConn.getResponseCode();//this cannot be invoked before data stream is ready when performing HTTP POST
+            int status = postConn.getResponseCode();//this cannot be invoked before data stream is ready when performing HTTP POST
 
-        //reading in response from endpoint
-        if (status == 201) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(postConn.getInputStream()));
-            String content = br.readLine();
-            System.out.println(content);
+            //reading in response from endpoint
+            if (status == 201) {
+                postSuccessful = true;
+                BufferedReader br = new BufferedReader(new InputStreamReader(postConn.getInputStream()));
+                String content = br.readLine();
+                System.out.println(content);
 
-        } else {
-            System.out.println("Invalid HTTP response status "
-                    + "code " + status + " from web service server.");
+            } else {
+                System.out.println("Invalid HTTP response status "
+                        + "code " + status + " from web service server.");
+            }
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ProtocolException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     //test for writing schedule to database, need to modify to alter time/message based on controllers
-    public void scheduleUsers(ArrayList<Integer> people, String time) throws IOException {
+    public void scheduleUsers(String time, ArrayList<Integer> people) throws IOException {
 
-        Model test = new Model();
         Schedule schedule = new Schedule(time, 1, people);
-        test.writeScheduleToDatabase(schedule);
+        writeScheduleToDatabase(schedule);
 
     }
 
+     public static boolean getPostBoolean() {
+        return postSuccessful;
+    }
+
+    public void resetPostBool(){
+         postSuccessful = false;
+    }
+    
     ArrayList<Integer> inactiveUsers = new ArrayList<Integer>();
+
     public void makeUsersInactive(ArrayList<Integer> people) {
-        for(Integer p : people)
-        {
-            inactiveUsers.add(p);
+        if (postSuccessful) {
+            for (Integer p : people) {
+                inactiveUsers.add(p);
+            }
+
+        }else {
+            System.out.println("Please enter a valid schedule in ISO 8601 format");
         }
     }
-    public ArrayList<Integer> getInactiveUsers()
-    {
+
+    public ArrayList<Integer> getInactiveUsers() {
         return inactiveUsers;
     }
 
-    /*   
-     public void testGetUsers() throws IOException
-     {
-        
-     String token = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
-     URL obj = new URL(GET_USERS_URL);
-     HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-     String auth = "Token " + token;
-     con.setRequestMethod("GET");
-     con.setRequestProperty ("Authorization", auth);
-     con.setRequestProperty("User-Agent", USER_AGENT);
-     con.setRequestProperty("Accept", "application/json");
-     int responseCode = con.getResponseCode();
-     System.out.println("GET Response Code :: " + responseCode);
-     if (responseCode == HttpURLConnection.HTTP_OK) { // success
-     BufferedReader in = new BufferedReader(new InputStreamReader(
-     con.getInputStream()));
-     String inputLine;
-     StringBuffer response = new StringBuffer();
-
-     while ((inputLine = in.readLine()) != null) {
-     response.append(inputLine);
-     }
-     in.close();
-
-     // print result
-     //System.out.println(response.toString());
-                
-                
-     String m = response.toString();
-                
-                
-     ArrayList<String> a = new ArrayList<String>();
-     int x = 0;
-     boolean hitBracket = false;
-     for(int i = 0; i <response.length();i++)
-     {
-     if(response.charAt(i) == '[')
-     {
-     hitBracket = true;
-     x = i+1;
-     }
-     if(!hitBracket)
-     {
-     continue;
-     }
-     if(response.length() -1 != i && response.charAt(i) == ',' && response.charAt(i-1) == '}' && response.charAt(i+1) == '{' )
-     {
-     a.add(response.substring(x, i));
-     x=i+1;
-     }
-     }
-                
-                
-     Gson g = new Gson();
-     ArrayList<Person> people = new ArrayList<Person>();
-     for(int i = 0; i < a.size(); i++)
-     {
-     System.out.println(a.get(i)+"\n");
-     Person p = g.fromJson(a.get(i), Person.class);
-     people.add(p);
-     }
-                
-                
-     for(Person p : people)
-     {
-     System.out.println(p);
-     }
-                
-                
-     //Type type = new TypeToken<List<Person>>() {}.getType();
-     //ArrayList<Person> p = (ArrayList<Person>) g.fromJson(m, type);
-                
-                
-     //ArrayList<Person> p = g.fromJson(response, ArrayList<Person>.class);
-     //JSONParser parser = new JSONParser(); 
-     //JSONObject json = (JSONObject) parser.parse(stringToParse);
-                
-     } else {
-     System.out.println("GET request not worked");
-     }
-            
-     } 
-     */
 }

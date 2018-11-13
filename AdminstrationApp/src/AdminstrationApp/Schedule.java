@@ -17,7 +17,7 @@ public class Schedule {
     private String send_at;
     private int message;  
     private ArrayList<Integer> users;
-//    boolean sent;
+//    transient boolean sent;
     
     public Schedule(String time, int x, ArrayList<Integer> y){
         send_at = time;
