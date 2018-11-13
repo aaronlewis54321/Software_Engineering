@@ -37,7 +37,7 @@ import javafx.stage.Stage;
  * @author alewis91
  */
 public class View extends Application {
-    
+
     Button btn;
     Button btnAddUsers;
     Button btnEditGroups;
@@ -46,55 +46,44 @@ public class View extends Application {
     Button btnExportCSV;
     Model m;
     Controller c;
-    ArrayList<Integer> scheduledUsers;
     TableView table;
     BorderPane border;
     ArrayList<Person> people;
+    private ArrayList<Integer> scheduledUsers;
     TextField txtSchedule;
-    
-    
 
-    
-    
     @Override
     public void start(Stage primaryStage) throws IOException {
         m = new Model();
         c = new Controller(m);
-        scheduledUsers = new ArrayList<Integer>();
         people = new ArrayList<Person>();
-        
-        
-        
-        Person l = new Person("", "", "", "","", "4");
+        scheduledUsers = new ArrayList<Integer>();
+
+        Person l = new Person("", "", "", "", "", "4");
         ArrayList<Person> list = new ArrayList<Person>();
         list.add(l);
          //m.writePeopleToDatabase(list);
-        
+
         //Button btn = new Button();
         //btn.setText("Placeholder");
-        
         //Button btnAddUsers = new Button();
         //btnAddUsers.setText("Add Users");
         //btnAddUsers.setOnAction(e1 -> c.btnAddUsersAction());
-        
         //Button btnEditGroups = new Button();
         //btnEditGroups.setText("Edit Groups");
         //btnEditGroups.setOnAction(e2 -> c.btnEditGroupsAction());
-        
         //Button btnApplyChanges = new Button();
         //btnApplyChanges.setText("Apply Changes");
         //btnApplyChanges.setOnAction(e3 -> c.btnApplyChangesAction());
-        
         //Button btnRevertChanges = new Button();
         //btnRevertChanges.setText("Revert Changes");
         //btnRevertChanges.setOnAction(e4 -> c.btnRevertChangesAction());
-        
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
         Button btnHelp = new Button("Help");
         btnHelp.setOnAction(e -> c.btnHelpAction());
-        
+
         Button btnExportCSV = new Button();
         btnExportCSV.setText("Export Data");
         btnExportCSV.setOnAction(e5 -> {
@@ -104,8 +93,7 @@ public class View extends Application {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
-        
+
         table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
@@ -124,69 +112,60 @@ public class View extends Application {
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
         scheduleCol.setStyle("-fx-alignment: CENTER;");
         scheduleCol.setPrefWidth(176);
-        
-        
+
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());
-        
-        for(Person p : m.getPeople())
-        {
-            if(!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID())))
-            table.getItems().add(p);
+
+        for (Person p : m.getPeople()) {
+            if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
+                table.getItems().add(p);
+            }
             people.add(p);
         }
-        
-        
+
         border = new BorderPane();
         table.setEditable(true);
         /*
-        table.getSelectionModel().cellSelectionEnabledProperty().set(true);
-        table.setOnKeyPressed(event -> {
-            if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
-                //This code should determine the current table position, and edit that position with input
-                System.out.println("test");
-            }
-            else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.TAB)
-            {
-               table.getSelectionModel().selectNext();
-               event.consume();
-            }
-            else if (event.getCode() == KeyCode.LEFT) {
-            // work around due to
-            // TableView.getSelectionModel().selectPrevious() due to a bug
-            // stopping it from working on
-            // the first column in the last row of the table
-        }
-    });
+         table.getSelectionModel().cellSelectionEnabledProperty().set(true);
+         table.setOnKeyPressed(event -> {
+         if (event.getCode().isLetterKey() || event.getCode().isDigitKey()) {
+         //This code should determine the current table position, and edit that position with input
+         System.out.println("test");
+         }
+         else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.TAB)
+         {
+         table.getSelectionModel().selectNext();
+         event.consume();
+         }
+         else if (event.getCode() == KeyCode.LEFT) {
+         // work around due to
+         // TableView.getSelectionModel().selectPrevious() due to a bug
+         // stopping it from working on
+         // the first column in the last row of the table
+         }
+         });
         
-        */
-        
-        
-        
-        
+         */
+
         border.setCenter(table);
-        
+
         //btn.setMinWidth(130);
         //border.setLeft(btn);
-        
-        
         VBox vboxLeft = new VBox();
         vboxLeft.setPrefWidth(130);
-        
+
         Button[] options = {btnExportCSV, btnRefresh, btnHelp};  //{btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
-        for (int i=0; i<options.length; i++) {
-           options[i].setMinWidth(vboxLeft.getPrefWidth());
-           vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
-           vboxLeft.getChildren().add(options[i]);
-    }
-               
+        for (int i = 0; i < options.length; i++) {
+            options[i].setMinWidth(vboxLeft.getPrefWidth());
+            vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
+            vboxLeft.getChildren().add(options[i]);
+        }
+
         border.setLeft(vboxLeft);
         //border.setRight(border.getRight(),btnEditUsers);
         //root.getChildren().add(table);
-        
+
         //border.setLeft(vboxLeft);
-        
-        
         HBox submitArea = new HBox(10);
         submitArea.setPadding(new Insets(0, 0, 0, 130));
         //submitArea.setHgap(100);
@@ -203,51 +182,27 @@ public class View extends Application {
         txtSchedule.setPrefWidth(300);
         Label lblSchedule = new Label("Schedule: ");
         lblSchedule.setPrefHeight(30);
-        submitArea.getChildren().addAll(lblSchedule,txtSchedule,btnSubmit);
-        
+        submitArea.getChildren().addAll(lblSchedule, txtSchedule, btnSubmit);
+
         border.setBottom(submitArea);
-        
-        
+
         Scene scene = new Scene(border, 1013, 600);
-        
+
         primaryStage.setTitle("Emoji Administration");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
+
     }
 
     /**
      * @param args the command line arguments
      */
-        public static void main(String[] args) {
-         launch(args);
-         
-        
+    public static void main(String[] args) {
+        launch(args);
+
     }
 
-    ArrayList<Integer> getScheduledUsers() {
-        return scheduledUsers;
-    }
-    void clearScheduledUsers() {
-        scheduledUsers.clear();
-    }
-
-    void determineScheduledUsers() {
-        //scheduledUsers.add(Integer.parseInt(((Person)table.getSelectionModel().getSelectedItems()).getUserID()));
-        //scheduledUsers.add(1);
-        //scheduledUsers.add(2);
-        
-        for(Person p : people)
-        {
-            if(p.getCheckBox().isSelected())
-            {
-                scheduledUsers.add(Integer.parseInt(p.getUserID()));
-            }
-        }
-        
-    }
-    
-    void refreshTable(){
+    void refreshTable() {
         table = new TableView();
         people = new ArrayList<Person>();
         TableColumn firstNameCol = new TableColumn("First Name");
@@ -266,21 +221,46 @@ public class View extends Application {
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
         scheduleCol.setStyle("-fx-alignment: CENTER;");
         scheduleCol.setPrefWidth(176);
-        
+
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());
-        
+
         //System.out.println(m.getInactiveUsers().contains(Integer.parseInt("1")));
-        for(Person p : m.getPeople())
-        {
-            if(!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID())))
-            table.getItems().add(p);
+        for (Person p : m.getPeople()) {
+            if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
+                table.getItems().add(p);
+            }
             people.add(p);
         }
         border.setCenter(table);
     }
-    String getScheduleTime(){
+
+  
+    ArrayList<Integer> getScheduledUsers() {
+        return scheduledUsers;
+    }
+
+    void clearScheduledUsers() {
+            scheduledUsers.clear();
+            m.resetPostBool();
+        }
+    
+
+    void determineScheduledUsers() {
+        //scheduledUsers.add(Integer.parseInt(((Person)table.getSelectionModel().getSelectedItems()).getUserID()));
+        //scheduledUsers.add(1);
+        //scheduledUsers.add(2);
+
+        for (Person p : people) {
+            if (p.getCheckBox().isSelected()) {
+                scheduledUsers.add(Integer.parseInt(p.getUserID()));
+            }
+        }
+
+    }
+
+    String getScheduleTime() {
         return txtSchedule.getText();
     }
-    
+
 }
