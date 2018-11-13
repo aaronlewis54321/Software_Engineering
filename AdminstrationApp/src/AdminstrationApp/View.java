@@ -229,8 +229,9 @@ public class View extends Application {
         for (Person p : m.getPeople()) {
             if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
                 table.getItems().add(p);
+                people.add(p);
             }
-            people.add(p);
+            
         }
         border.setCenter(table);
     }
