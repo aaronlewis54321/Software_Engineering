@@ -95,8 +95,6 @@ public class View extends Application {
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
-        Button btnHelp = new Button("Help");
-        btnHelp.setOnAction(e -> c.btnHelpAction());
 
         Button btnExportCSV = new Button();
         btnExportCSV.setText("Export Data");
@@ -174,7 +172,7 @@ public class View extends Application {
         VBox vboxLeft = new VBox();
         vboxLeft.setPrefWidth(130);
 
-        Button[] options = {btnExportCSV, btnRefresh, btnHelp};  //{btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
+        Button[] options = {btnExportCSV, btnRefresh};  //{btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
         for (int i = 0; i < options.length; i++) {
             options[i].setMinWidth(vboxLeft.getPrefWidth());
             vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
