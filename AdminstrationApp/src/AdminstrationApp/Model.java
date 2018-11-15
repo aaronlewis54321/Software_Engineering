@@ -13,6 +13,8 @@ import java.lang.reflect.Type;
 import java.beans.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,11 +61,15 @@ public class Model implements Serializable {
 
     private static final String USER_AGENT = "Mozilla/5.0";
     boolean getPostBoolean;
+    
+    
+    ArrayList<InactiveUser> inactiveUsers = new ArrayList<InactiveUser>();
 
     public Model() throws IOException {
         propertySupport = new PropertyChangeSupport(this);
         people = new ArrayList<Person>();
         getPeopleFromDatabase();
+        readInactiveUsersFromFile();
         //ReadGroupsFromDatabase();
     }
 
@@ -352,21 +359,89 @@ public class Model implements Serializable {
          postSuccessful = false;
     }
     
-    ArrayList<Integer> inactiveUsers = new ArrayList<Integer>();
+    
 
-    public void makeUsersInactive(ArrayList<Integer> people) {
+    public void makeUsersInactive(ArrayList<Integer> people, String schedule) {
         if (postSuccessful) {
             for (Integer p : people) {
-                inactiveUsers.add(p);
+                inactiveUsers.add(new InactiveUser(p, schedule));
             }
+                       
+            writeInactiveUsersToFile();
 
         }else {
             System.out.println("Please enter a valid schedule in ISO 8601 format");
         }
     }
 
-    public ArrayList<Integer> getInactiveUsers() {
+    public ArrayList<InactiveUser> getInactiveUsers() {
         return inactiveUsers;
+    }
+    
+    private void readInactiveUsersFromFile()
+    {
+        BufferedReader br = null;
+        try {
+            String localDir = System.getProperty("user.dir");
+            br = new BufferedReader(new FileReader(localDir + "\\src\\Resources\\inactiveUsers.txt"));
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] inactiveUsersFromFile = line.split(",");
+
+                InactiveUser t = new InactiveUser(Integer.parseInt(inactiveUsersFromFile[0]), inactiveUsersFromFile[1]);
+                inactiveUsers.add(t);
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private void writeInactiveUsersToFile()
+    {
+        try { 
+  
+            // Open given file in append mode. 
+            String localDir = System.getProperty("user.dir");
+            BufferedWriter out = new BufferedWriter(new FileWriter(localDir + "\\src\\Resources\\inactiveUsers.txt")); 
+            for(InactiveUser i : inactiveUsers)
+            {
+                out.write(i.print());
+                out.newLine();
+            }
+            out.close(); 
+        } 
+        catch (IOException e) { 
+            System.out.println("exception occoured" + e); 
+        } 
+    }
+    
+    public void makeUsersActive()
+    {
+        Iterator<InactiveUser> i = inactiveUsers.iterator();
+        while(i.hasNext())
+        {
+            InactiveUser s = i.next();
+            if(s.noLongerInactive())
+            {
+                i.remove();
+                writeInactiveUsersToFile();
+            }
+        }
+        
     }
 
 }

@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -115,11 +116,17 @@ public class View extends Application {
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());
-
+        m.makeUsersActive();
+        outerLoop1:
         for (Person p : m.getPeople()) {
-            if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
-                table.getItems().add(p);
+            for(InactiveUser i : m.getInactiveUsers())
+            {
+                if (i.getUserId() == Integer.parseInt(p.getUserID()))
+                {
+                    continue outerLoop1;
+                }
             }
+            table.getItems().add(p);
             people.add(p);
         }
 
@@ -180,9 +187,36 @@ public class View extends Application {
         });
         txtSchedule = new TextField();
         txtSchedule.setPrefWidth(300);
+        
+        ComboBox year = new ComboBox();
+        year.setPrefWidth(100);
+        ObservableList<String> s = FXCollections.observableArrayList();
+        s.add("2018");s.add("2019");s.add("2020");s.add("2021");s.add("2022");s.add("2023");
+        year.setItems(s);
+        ComboBox month = new ComboBox();
+        month.setPrefWidth(100);
+        ObservableList<String> q = FXCollections.observableArrayList();
+        q.add("JAN");q.add("FEB");q.add("MAR");q.add("APR");q.add("MAY");q.add("JUN");q.add("JUL");
+        q.add("AUG");q.add("SEP");q.add("OCT");q.add("NOV");q.add("DEC");
+        month.setItems(q);
+        ComboBox day = new ComboBox();
+        ObservableList<String> w = FXCollections.observableArrayList();
+        w.add("1");w.add("2");w.add("3");w.add("4");w.add("5");w.add("6");w.add("7");
+        w.add("8");w.add("9");w.add("10");w.add("11");w.add("12");
+        w.add("13");w.add("14");w.add("15");w.add("16");w.add("17");w.add("18");w.add("19");
+        w.add("20");w.add("21");w.add("22");w.add("23");w.add("24");
+        w.add("25");w.add("26");w.add("27");w.add("28");w.add("29");w.add("30");w.add("31");
+        day.setItems(w);
+        day.setPrefWidth(100);
+        TextField hour = new TextField();
+        hour.setPrefWidth(100);
+        TextField minute = new TextField();
+        minute.setPrefWidth(100);
+        
+        
         Label lblSchedule = new Label("Schedule: ");
         lblSchedule.setPrefHeight(30);
-        submitArea.getChildren().addAll(lblSchedule, txtSchedule, btnSubmit);
+        submitArea.getChildren().addAll(lblSchedule, year, month, day, hour, minute, btnSubmit);
 
         border.setBottom(submitArea);
 
@@ -226,11 +260,24 @@ public class View extends Application {
         //table.getItems().add(m.getPeople());
 
         //System.out.println(m.getInactiveUsers().contains(Integer.parseInt("1")));
+        m.makeUsersActive();
+        outerLoop:
         for (Person p : m.getPeople()) {
+            for(InactiveUser i : m.getInactiveUsers())
+            {
+                if (i.getUserId() == Integer.parseInt(p.getUserID()))
+                {
+                    continue outerLoop;
+                }
+            }
+            table.getItems().add(p);
+            people.add(p);
+            /*
             if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
                 table.getItems().add(p);
                 people.add(p);
             }
+            */
             
         }
         border.setCenter(table);

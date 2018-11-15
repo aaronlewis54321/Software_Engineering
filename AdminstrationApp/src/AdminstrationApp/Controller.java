@@ -52,7 +52,7 @@ public class Controller {
     void btnSubmitAction(View v) throws IOException {
         v.determineScheduledUsers();
         m.scheduleUsers(v.getScheduleTime(),v.getScheduledUsers());
-        m.makeUsersInactive(v.getScheduledUsers());
+        m.makeUsersInactive(v.getScheduledUsers(), v.getScheduleTime());
         v.clearScheduledUsers();
         btnRefreshAction(v);
         
