@@ -5,6 +5,8 @@
  */
 package AdminstrationApp;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -45,6 +48,11 @@ public class View extends Application {
     Button btnApplyChanges;
     Button btnRevertChanges;
     Button btnExportCSV;
+    ComboBox year;
+    ComboBox month;
+    ComboBox day;
+    TextField hour;
+    TextField minute;
     Model m;
     Controller c;
     TableView table;
@@ -63,6 +71,11 @@ public class View extends Application {
         Person l = new Person("", "", "", "", "", "4");
         ArrayList<Person> list = new ArrayList<Person>();
         list.add(l);
+        
+        String localDir = System.getProperty("user.dir");
+        primaryStage.getIcons().add(new Image("file:taskbar_image.png"));
+         
+        
          //m.writePeopleToDatabase(list);
 
         //Button btn = new Button();
@@ -188,18 +201,18 @@ public class View extends Application {
         txtSchedule = new TextField();
         txtSchedule.setPrefWidth(300);
         
-        ComboBox year = new ComboBox();
+        year = new ComboBox();
         year.setPrefWidth(100);
         ObservableList<String> s = FXCollections.observableArrayList();
         s.add("2018");s.add("2019");s.add("2020");s.add("2021");s.add("2022");s.add("2023");
         year.setItems(s);
-        ComboBox month = new ComboBox();
+        month = new ComboBox();
         month.setPrefWidth(100);
         ObservableList<String> q = FXCollections.observableArrayList();
         q.add("JAN");q.add("FEB");q.add("MAR");q.add("APR");q.add("MAY");q.add("JUN");q.add("JUL");
         q.add("AUG");q.add("SEP");q.add("OCT");q.add("NOV");q.add("DEC");
         month.setItems(q);
-        ComboBox day = new ComboBox();
+        day = new ComboBox();
         ObservableList<String> w = FXCollections.observableArrayList();
         w.add("1");w.add("2");w.add("3");w.add("4");w.add("5");w.add("6");w.add("7");
         w.add("8");w.add("9");w.add("10");w.add("11");w.add("12");
@@ -208,9 +221,9 @@ public class View extends Application {
         w.add("25");w.add("26");w.add("27");w.add("28");w.add("29");w.add("30");w.add("31");
         day.setItems(w);
         day.setPrefWidth(100);
-        TextField hour = new TextField();
+        hour = new TextField();
         hour.setPrefWidth(100);
-        TextField minute = new TextField();
+        minute = new TextField();
         minute.setPrefWidth(100);
         
         
@@ -308,7 +321,74 @@ public class View extends Application {
     }
 
     String getScheduleTime() {
-        return txtSchedule.getText();
+        int m =0;
+        if(month.getValue().equals("JAN"))
+        {
+            m = 1;
+        }
+        if(month.getValue().equals("FEB"))
+        {
+            m = 2;
+        }
+        if(month.getValue().equals("MAR"))
+        {
+            m = 3;
+        }
+        if(month.getValue().equals("APR"))
+        {
+            m = 4;
+        }
+        if(month.getValue().equals("MAY"))
+        {
+            m = 5;
+        }
+        if(month.getValue().equals("JUN"))
+        {
+            m = 6;
+        }
+        if(month.getValue().equals("JUL"))
+        {
+            m = 7;
+        }
+        if(month.getValue().equals("AUG"))
+        {
+            m = 8;
+        }
+        if(month.getValue().equals("SEP"))
+        {
+            m = 9;
+        }
+        if(month.getValue().equals("OCT"))
+        {
+            m = 10;
+        }
+        if(month.getValue().equals("NOV"))
+        {
+            m = 11;
+        }
+        if(month.getValue().equals("DEC"))
+        {
+            m = 12;
+        }
+        if(hour.getText().length() == 1 && minute.getText().length() == 1)
+        {
+            return "" + year.getValue() + "-" + m + "-" +
+                day.getValue() + "T0" + hour.getText() + ":0" + minute.getText() + ":00";
+        }
+        else if(hour.getText().length() == 1)
+        {
+            return "" + year.getValue() + "-" + m + "-" +
+                day.getValue() + "T0" + hour.getText() + ":" + minute.getText() + ":00";
+        }
+        else if(minute.getText().length() == 1)
+        {
+            return "" + year.getValue() + "-" + m + "-" +
+                day.getValue() + "T" + hour.getText() + ":0" + minute.getText() + ":00";
+        }
+        else {
+            return "" + year.getValue() + "-" + m + "-" +
+                day.getValue() + "T" + hour.getText() + ":" + minute.getText() + ":00";
+        }
     }
 
 }
