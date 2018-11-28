@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.net.HttpURLConnection;
@@ -30,6 +32,12 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
 /**
  *
@@ -60,9 +68,9 @@ public class Model implements Serializable {
     public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
 
     private static final String USER_AGENT = "Mozilla/5.0";
+
     boolean getPostBoolean;
-    
-    
+
     ArrayList<InactiveUser> inactiveUsers = new ArrayList<InactiveUser>();
 
     public Model() throws IOException {
@@ -144,6 +152,9 @@ public class Model implements Serializable {
 
         } else {
             System.out.println("GET request not worked");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("HTTP Connection Error");
+            alert.setContentText("GET request failed");
         }
 
     }
@@ -154,7 +165,7 @@ public class Model implements Serializable {
         String auth = "Token " + TOKEN;
         for (Person pers : p) {
             URL obj = new URL(PUT_USERS_URL + "/" + pers.getUserID());
-            System.out.println(PUT_USERS_URL + "/" + pers.getUserID());
+//            System.out.println(PUT_USERS_URL + "/" + pers.getUserID());
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("PUT");
             con.setRequestProperty("Authorization", auth);
@@ -167,7 +178,7 @@ public class Model implements Serializable {
             //System.out.println("{\"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\", \"first_name\" : \"firstname\", \"birth_date\" : \"05/05/1998\","
             //+ " \"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\"}");
             out.close();
-            System.out.println(con.getResponseCode());
+//            System.out.println(con.getResponseCode());
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // success
                 BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -180,21 +191,14 @@ public class Model implements Serializable {
                 }
                 in.close();
 
-                System.out.println(response);
+//                System.out.println(response);
             } else {
                 System.out.println("PUT request not worked");
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("HTTP Error");
+                alert.setContentText("PUT request failed to modify database.");
             }
         }
-    }
-
-    //This method goes to our local database and reads in all existing groups
-    private void ReadGroupsFromDatabase() {
-
-    }
-
-    //This method writes changes to groups to the local database
-    private void writeGroupsToDatabase() {
-
     }
 
     //This method uses the CSVUtils class to write response data to a CSV file.
@@ -269,6 +273,9 @@ public class Model implements Serializable {
 
         } else {
             System.out.println("GET request not worked");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("HTTP Connection Error");
+            alert.setContentText("GET request Failed");
         }
 
     }
@@ -330,6 +337,12 @@ public class Model implements Serializable {
             } else {
                 System.out.println("Invalid HTTP response status "
                         + "code " + status + " from web service server.");
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("HTTP Error");
+                alert.setHeaderText("Connection Error");
+                alert.setContentText("Post failed: status code " + status + " from web service");
+
+                alert.showAndWait();
             }
         } catch (MalformedURLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
@@ -345,41 +358,53 @@ public class Model implements Serializable {
 
     //test for writing schedule to database, need to modify to alter time/message based on controllers
     public void scheduleUsers(String time, ArrayList<Integer> people) throws IOException {
-
         Schedule schedule = new Schedule(time, 1, people);
         writeScheduleToDatabase(schedule);
 
     }
 
-     public static boolean getPostBoolean() {
+    public static boolean getPostBoolean() {
         return postSuccessful;
     }
 
-    public void resetPostBool(){
-         postSuccessful = false;
+    public void resetPostBool() {
+        postSuccessful = false;
     }
-    
-    
+
+    //If schedule is accidentally sent, and we want to reactivate all users
+    //clears inactiveUsers.txt
+    public void makeAllUsersActive() {
+        try {
+            inactiveUsers.clear();
+            String localDir = System.getProperty("user.dir");
+            PrintWriter pw = new PrintWriter(localDir + "\\src\\Resources\\inactiveUsers.txt");
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void makeUsersInactive(ArrayList<Integer> people, String schedule) {
         if (postSuccessful) {
             for (Integer p : people) {
                 inactiveUsers.add(new InactiveUser(p, schedule));
             }
-                       
+
             writeInactiveUsersToFile();
 
-        }else {
+        } else {
             System.out.println("Please enter a valid schedule in ISO 8601 format");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Scheduling Error");
+            alert.setContentText("Please select a valid date and time");
         }
     }
 
     public ArrayList<InactiveUser> getInactiveUsers() {
         return inactiveUsers;
     }
-    
-    private void readInactiveUsersFromFile()
-    {
+
+    private void readInactiveUsersFromFile() {
         BufferedReader br = null;
         try {
             String localDir = System.getProperty("user.dir");
@@ -409,39 +434,66 @@ public class Model implements Serializable {
             }
         }
     }
-    
-    private void writeInactiveUsersToFile()
-    {
-        try { 
-  
+
+    private void writeInactiveUsersToFile() {
+        try {
+
             // Open given file in append mode. 
             String localDir = System.getProperty("user.dir");
-            BufferedWriter out = new BufferedWriter(new FileWriter(localDir + "\\src\\Resources\\inactiveUsers.txt")); 
-            for(InactiveUser i : inactiveUsers)
-            {
+            BufferedWriter out = new BufferedWriter(new FileWriter(localDir + "\\src\\Resources\\inactiveUsers.txt"));
+            for (InactiveUser i : inactiveUsers) {
                 out.write(i.print());
                 out.newLine();
             }
-            out.close(); 
-        } 
-        catch (IOException e) { 
-            System.out.println("exception occoured" + e); 
-        } 
+            out.close();
+        } catch (IOException e) {
+            System.out.println("exception occurred" + e);
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Exception Dialog");
+            alert.setHeaderText("Missing In Action");
+            alert.setContentText("Could not find file inactiveUsers.txt!");
+
+            Exception ex = new FileNotFoundException("Could not find file inactiveUsers.txt");
+
+            // Create expandable Exception.
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String exceptionText = sw.toString();
+
+            Label label = new Label("The exception stacktrace was:");
+
+            TextArea textArea = new TextArea(exceptionText);
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);
+            GridPane.setVgrow(textArea, Priority.ALWAYS);
+            GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+            GridPane expContent = new GridPane();
+            expContent.setMaxWidth(Double.MAX_VALUE);
+            expContent.add(label, 0, 0);
+            expContent.add(textArea, 0, 1);
+
+            // Set expandable Exception into the dialog pane.
+            alert.getDialogPane().setExpandableContent(expContent);
+
+            alert.showAndWait();
+        }
     }
-    
-    public void makeUsersActive()
-    {
+
+    public void makeUsersActive() {
         Iterator<InactiveUser> i = inactiveUsers.iterator();
-        while(i.hasNext())
-        {
+        while (i.hasNext()) {
             InactiveUser s = i.next();
-            if(s.noLongerInactive())
-            {
+            if (s.noLongerInactive()) {
                 i.remove();
                 writeInactiveUsersToFile();
             }
         }
-        
+
     }
 
 }
