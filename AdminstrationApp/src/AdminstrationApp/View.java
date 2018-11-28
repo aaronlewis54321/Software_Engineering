@@ -5,10 +5,7 @@
  */
 package AdminstrationApp;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -19,24 +16,14 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -45,7 +32,9 @@ import javafx.scene.control.Tooltip;
 
 /**
  *
- * @author alewis91 and lil bit by mRinoldo
+ * @author alewis91 and mRinoldo
+ * View got a little messier with a bit more logic than intended but
+ * it works so. Yeah. Hopefully helpful comments
  */
 public class View extends Application {
 
@@ -68,9 +57,11 @@ public class View extends Application {
         ArrayList<Person> list = new ArrayList<Person>();
         list.add(l);
 
+        //sexy icon
         String localDir = System.getProperty("user.dir");
         primaryStage.getIcons().add(new Image("file:taskbar_image.png"));
 
+        // buttons that do self explanatory things
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
@@ -88,12 +79,14 @@ public class View extends Application {
             }
         });
         
+        // Just in case we need to bring some people back into view
+        // We can't delete the actual schedule but we CAN POST a new one
         Button btnReactivateAll = new Button();
         btnReactivateAll.setText("Reactivate all users");
         btnReactivateAll.setOnAction(event -> c.btnReactivateAllAction(this));
         btnReactivateAll.setTooltip(new Tooltip("Reactivate Missing Users"));
 
-        
+        //table creation with columns 
         table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
@@ -114,7 +107,8 @@ public class View extends Application {
         scheduleCol.setPrefWidth(176);
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
-        //table.getItems().add(m.getPeople());
+
+        //Populate the tableview with users from the database
         m.makeUsersActive();
         outerLoop1:
         for (Person p : m.getPeople()) {
@@ -127,6 +121,7 @@ public class View extends Application {
             people.add(p);
         }
 
+        //sweet border
         border = new BorderPane();
         table.setEditable(true);
         /*
@@ -152,13 +147,11 @@ public class View extends Application {
          */
 
         border.setCenter(table);
-
-        //btn.setMinWidth(130);
-        //border.setLeft(btn);
         VBox vboxLeft = new VBox();
         vboxLeft.setPrefWidth(130);
 
-        Button[] options = {btnExportCSV, btnRefresh, btnReactivateAll};  //{btnHelp, btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
+        //Reduced options buttons to only 3, less is more
+        Button[] options = {btnExportCSV, btnRefresh, btnReactivateAll};
         for (int i = 0; i < options.length; i++) {
             options[i].setMinWidth(vboxLeft.getPrefWidth());
             vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
@@ -166,44 +159,38 @@ public class View extends Application {
         }
 
         border.setLeft(vboxLeft);
-        //border.setRight(border.getRight(),btnEditUsers);
-        //root.getChildren().add(table);
-
-        //border.setLeft(vboxLeft);
-        border.setLeft(vboxLeft);
-        //border.setRight(border.getRight(),btnEditUsers);
-        //root.getChildren().add(table);
-
-        //border.setLeft(vboxLeft);
+  
+        //Selector for Date/Time scheduling, not designed from scratch
         DateTimePicker schedPicker = new DateTimePicker();
-        schedPicker.setDateTimeValue(LocalDateTime.now());
+        schedPicker.setDateTimeValue(LocalDateTime.now());  //Default to today
 
         HBox submitArea = new HBox(10);
         submitArea.setPadding(new Insets(5, 0, 0, 130));
-        //submitArea.setHgap(100);
         Button btnSubmit = new Button("Submit");
-//        btnSubmit.setStyle("-fx-background-color: slateblue; -fx-text-fill: white;");
         btnSubmit.setTooltip(new Tooltip("Send Schedule For Selected Users"));
-
         btnSubmit.setPrefWidth(100);
+
+        //This logic shouldn't be here, should be in controller/model
         btnSubmit.setOnAction(e -> {
             try {
-
+                //create LDT instance(no timezones), use that to create zoned instance,
+                //offset to UTC, format into string for posting
                 LocalDateTime ldt = schedPicker.getDateTimeValue();
                 ZonedDateTime ldtZoned = ldt.atZone(ZoneId.systemDefault());
                 ZonedDateTime utcZoned = ldtZoned.withZoneSameInstant(ZoneOffset.UTC);
                 asIsoDateTime = utcZoned.format(DateTimeFormatter.ISO_DATE_TIME);
-
+                
+                //do all the other stuff button is supposed to through controller
                 c.btnSubmitAction(this);
             } catch (IOException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
         StackPane root = new StackPane(schedPicker);
         Label lblSchedule = new Label("Schedule: ");
         lblSchedule.setPrefHeight(30);
         submitArea.getChildren().addAll(lblSchedule, root, btnSubmit);
-
         border.setBottom(submitArea);
 
         Scene scene = new Scene(border, 1013, 600);
@@ -222,6 +209,7 @@ public class View extends Application {
 
     }
 
+    //refresh table settings/columns/values
     void refreshTable() {
         table = new TableView();
         people = new ArrayList<Person>();
@@ -241,14 +229,11 @@ public class View extends Application {
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
         scheduleCol.setStyle("-fx-alignment: CENTER;");
         scheduleCol.setPrefWidth(176);
-        
-        DateTimePicker schedPicker = new DateTimePicker();
-        schedPicker.setDateTimeValue(LocalDateTime.now());
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());
 
-        //System.out.println(m.getInactiveUsers().contains(Integer.parseInt("1")));
+        //repopulate table with users who are not scheduled
         m.makeUsersActive();
         outerLoop:
         for (Person p : m.getPeople()) {
@@ -274,16 +259,18 @@ public class View extends Application {
         return scheduledUsers;
     }
 
+    //more B Logic that probably shouldn't be here
+    //clear scheduled users and reset successful post boolean
     void clearScheduledUsers() {
         scheduledUsers.clear();
         m.resetPostBool();
     }
 
     public String getSchedule() {
-//        System.out.println(asIsoDateTime);
         return asIsoDateTime;
     }
 
+    //determine who be selected, who we tryin to schedule
     void determineScheduledUsers() {
         for (Person p : people) {
             if (p.getCheckBox().isSelected()) {
