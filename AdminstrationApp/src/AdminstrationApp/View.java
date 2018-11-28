@@ -240,6 +240,9 @@ public class View extends Application {
         scheduleCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
         scheduleCol.setStyle("-fx-alignment: CENTER;");
         scheduleCol.setPrefWidth(176);
+        
+        DateTimePicker schedPicker = new DateTimePicker();
+        schedPicker.setDateTimeValue(LocalDateTime.now());
 
         table.getColumns().addAll(firstNameCol, lastNameCol, phoneNumCol, emailCol, scheduleCol);
         //table.getItems().add(m.getPeople());

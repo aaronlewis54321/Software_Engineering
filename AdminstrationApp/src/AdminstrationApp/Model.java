@@ -68,7 +68,7 @@ public class Model implements Serializable {
     public final String TOKEN = "d9ed1ecac123cae16e6e1a0b565762786bef301f";
 
     private static final String USER_AGENT = "Mozilla/5.0";
-    
+
     boolean getPostBoolean;
 
     ArrayList<InactiveUser> inactiveUsers = new ArrayList<InactiveUser>();
@@ -165,7 +165,7 @@ public class Model implements Serializable {
         String auth = "Token " + TOKEN;
         for (Person pers : p) {
             URL obj = new URL(PUT_USERS_URL + "/" + pers.getUserID());
-            System.out.println(PUT_USERS_URL + "/" + pers.getUserID());
+//            System.out.println(PUT_USERS_URL + "/" + pers.getUserID());
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("PUT");
             con.setRequestProperty("Authorization", auth);
@@ -178,7 +178,7 @@ public class Model implements Serializable {
             //System.out.println("{\"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\", \"first_name\" : \"firstname\", \"birth_date\" : \"05/05/1998\","
             //+ " \"last_name\" : \"nameTest\", \"birth_date\" : \"05/05/1998\"}");
             out.close();
-            System.out.println(con.getResponseCode());
+//            System.out.println(con.getResponseCode());
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // success
                 BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -191,7 +191,7 @@ public class Model implements Serializable {
                 }
                 in.close();
 
-                System.out.println(response);
+//                System.out.println(response);
             } else {
                 System.out.println("PUT request not worked");
                 Alert alert = new Alert(AlertType.ERROR);
@@ -434,10 +434,10 @@ public class Model implements Serializable {
             }
             out.close();
         } catch (IOException e) {
-            System.out.println("exception occoured" + e);
+            System.out.println("exception occurred" + e);
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Exception Dialog");
-            alert.setHeaderText("Look, an Exception Dialog");
+            alert.setHeaderText("Missing In Action");
             alert.setContentText("Could not find file inactiveUsers.txt!");
 
             Exception ex = new FileNotFoundException("Could not find file inactiveUsers.txt");
