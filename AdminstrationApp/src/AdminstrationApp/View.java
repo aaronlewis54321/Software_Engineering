@@ -41,6 +41,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Tooltip;
 
 /**
  *
@@ -48,17 +49,6 @@ import javafx.stage.Stage;
  */
 public class View extends Application {
 
-    Button btn;
-    Button btnAddUsers;
-    Button btnEditGroups;
-    Button btnApplyChanges;
-    Button btnRevertChanges;
-    Button btnExportCSV;
-    ComboBox year;
-    ComboBox month;
-    ComboBox day;
-    TextField hour;
-    TextField minute;
     Model m;
     Controller c;
     TableView table;
@@ -84,9 +74,12 @@ public class View extends Application {
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
+        btnRefresh.setTooltip(new Tooltip("Refresh Table View"));
 
         Button btnExportCSV = new Button();
         btnExportCSV.setText("Export Data");
+        btnExportCSV.setTooltip(new Tooltip("Export Response Data To CSV"));
+
         btnExportCSV.setOnAction(e5 -> {
             try {
                 c.btnExportDataAction();
@@ -94,7 +87,13 @@ public class View extends Application {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
+        Button btnReactivateAll = new Button();
+        btnReactivateAll.setText("Reactivate all users");
+        btnReactivateAll.setOnAction(event -> c.btnReactivateAllAction(this));
+        btnReactivateAll.setTooltip(new Tooltip("Reactivate Missing Users"));
 
+        
         table = new TableView();
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
@@ -159,7 +158,7 @@ public class View extends Application {
         VBox vboxLeft = new VBox();
         vboxLeft.setPrefWidth(130);
 
-        Button[] options = {btnExportCSV, btnRefresh};  //{btnHelp, btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
+        Button[] options = {btnExportCSV, btnRefresh, btnReactivateAll};  //{btnHelp, btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
         for (int i = 0; i < options.length; i++) {
             options[i].setMinWidth(vboxLeft.getPrefWidth());
             vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
@@ -180,10 +179,12 @@ public class View extends Application {
         schedPicker.setDateTimeValue(LocalDateTime.now());
 
         HBox submitArea = new HBox(10);
-        submitArea.setPadding(new Insets(0, 0, 0, 130));
+        submitArea.setPadding(new Insets(5, 0, 0, 130));
         //submitArea.setHgap(100);
         Button btnSubmit = new Button("Submit");
 //        btnSubmit.setStyle("-fx-background-color: slateblue; -fx-text-fill: white;");
+        btnSubmit.setTooltip(new Tooltip("Send Schedule For Selected Users"));
+
         btnSubmit.setPrefWidth(100);
         btnSubmit.setOnAction(e -> {
             try {

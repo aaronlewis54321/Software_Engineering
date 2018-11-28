@@ -371,6 +371,19 @@ public class Model implements Serializable {
         postSuccessful = false;
     }
 
+    //If schedule is accidentally sent, and we want to reactivate all users
+    //clears inactiveUsers.txt
+    public void makeAllUsersActive() {
+        try {
+            inactiveUsers.clear();
+            String localDir = System.getProperty("user.dir");
+            PrintWriter pw = new PrintWriter(localDir + "\\src\\Resources\\inactiveUsers.txt");
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void makeUsersInactive(ArrayList<Integer> people, String schedule) {
         if (postSuccessful) {
             for (Integer p : people) {

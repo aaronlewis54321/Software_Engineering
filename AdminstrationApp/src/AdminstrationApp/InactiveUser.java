@@ -58,16 +58,16 @@ public class InactiveUser {
 
                     // use comma as separator
                     String scheduledString = line.substring(line.lastIndexOf(",") + 1);
-                    System.out.println("scheduled time: "+ scheduledString);
+//                    System.out.println("scheduled time: "+ scheduledString);
                     
                     Instant scheduledTime = Instant.parse(scheduledString);
-                    System.out.println("scheduled time: "+ scheduledTime);
+//                    System.out.println("scheduled time: "+ scheduledTime);
 
                     Instant reactivate = scheduledTime.plusSeconds(600);
-                    System.out.println("reactivate time: "+ reactivate);
+//                    System.out.println("reactivate time: "+ reactivate);
 
                     Instant now = Instant.now();
-                    System.out.println("now time: "+ now);
+//                    System.out.println("now time: "+ now);
 
                     if (now.isAfter(reactivate)) {
                         noLongerInactive = true;

@@ -40,8 +40,9 @@ public class Controller {
         v.refreshTable();
     }
 
-    void btnHelpAction() {
-
+    void btnReactivateAllAction(View v){
+        m.makeAllUsersActive();
+        v.refreshTable();
     }
 
 }
