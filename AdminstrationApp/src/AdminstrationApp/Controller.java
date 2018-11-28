@@ -24,7 +24,7 @@ public class Controller {
     
     public void btnExportDataAction() throws IOException {
         m.writeResponseToCSV();
-    }    
+    }
 
     void btnSubmitAction(View v) throws IOException {
         v.determineScheduledUsers();
