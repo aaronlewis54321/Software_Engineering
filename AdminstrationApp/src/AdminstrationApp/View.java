@@ -8,6 +8,8 @@ package AdminstrationApp;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -59,39 +61,25 @@ public class View extends Application {
     BorderPane border;
     ArrayList<Person> people;
     private ArrayList<Integer> scheduledUsers;
-    TextField txtSchedule;
-
+    private String asIsoDateTime;
+    
     @Override
     public void start(Stage primaryStage) throws IOException {
         m = new Model();
         c = new Controller(m);
         people = new ArrayList<Person>();
         scheduledUsers = new ArrayList<Integer>();
+        
+
 
         Person l = new Person("", "", "", "", "", "4");
         ArrayList<Person> list = new ArrayList<Person>();
         list.add(l);
-        
+
         String localDir = System.getProperty("user.dir");
         primaryStage.getIcons().add(new Image("file:taskbar_image.png"));
-         
-        
-         //m.writePeopleToDatabase(list);
 
-        //Button btn = new Button();
-        //btn.setText("Placeholder");
-        //Button btnAddUsers = new Button();
-        //btnAddUsers.setText("Add Users");
-        //btnAddUsers.setOnAction(e1 -> c.btnAddUsersAction());
-        //Button btnEditGroups = new Button();
-        //btnEditGroups.setText("Edit Groups");
-        //btnEditGroups.setOnAction(e2 -> c.btnEditGroupsAction());
-        //Button btnApplyChanges = new Button();
-        //btnApplyChanges.setText("Apply Changes");
-        //btnApplyChanges.setOnAction(e3 -> c.btnApplyChangesAction());
-        //Button btnRevertChanges = new Button();
-        //btnRevertChanges.setText("Revert Changes");
-        //btnRevertChanges.setOnAction(e4 -> c.btnRevertChangesAction());
+    
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
@@ -130,10 +118,8 @@ public class View extends Application {
         m.makeUsersActive();
         outerLoop1:
         for (Person p : m.getPeople()) {
-            for(InactiveUser i : m.getInactiveUsers())
-            {
-                if (i.getUserId() == Integer.parseInt(p.getUserID()))
-                {
+            for (InactiveUser i : m.getInactiveUsers()) {
+                if (i.getUserId() == Integer.parseInt(p.getUserID())) {
                     continue outerLoop1;
                 }
             }
@@ -172,7 +158,7 @@ public class View extends Application {
         VBox vboxLeft = new VBox();
         vboxLeft.setPrefWidth(130);
 
-        Button[] options = {btnExportCSV, btnRefresh};  //{btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
+        Button[] options = {btnExportCSV, btnRefresh};  //{btnHelp, btnAddUsers, btnEditGroups, btnApplyChanges, btnRevertChanges, btnExportCSV};
         for (int i = 0; i < options.length; i++) {
             options[i].setMinWidth(vboxLeft.getPrefWidth());
             vboxLeft.setMargin(options[i], new Insets(0, 0, 0, 0));
@@ -184,50 +170,34 @@ public class View extends Application {
         //root.getChildren().add(table);
 
         //border.setLeft(vboxLeft);
+        border.setLeft(vboxLeft);
+        //border.setRight(border.getRight(),btnEditUsers);
+        //root.getChildren().add(table);
+
+        //border.setLeft(vboxLeft);
+        DateTimePicker schedPicker = new DateTimePicker();
+        schedPicker.setDateTimeValue(LocalDateTime.now());
+                
+        
         HBox submitArea = new HBox(10);
         submitArea.setPadding(new Insets(0, 0, 0, 130));
         //submitArea.setHgap(100);
         Button btnSubmit = new Button("Submit");
+//        btnSubmit.setStyle("-fx-background-color: slateblue; -fx-text-fill: white;");
         btnSubmit.setPrefWidth(100);
         btnSubmit.setOnAction(e -> {
             try {
+                asIsoDateTime = schedPicker.getDateTimeValue().format(DateTimeFormatter.ISO_DATE_TIME);
+//                LocalDateTime scheduleTime = schedPicker.getDateTimeValue();
                 c.btnSubmitAction(this);
             } catch (IOException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        txtSchedule = new TextField();
-        txtSchedule.setPrefWidth(300);
-        
-        year = new ComboBox();
-        year.setPrefWidth(100);
-        ObservableList<String> s = FXCollections.observableArrayList();
-        s.add("2018");s.add("2019");s.add("2020");s.add("2021");s.add("2022");s.add("2023");
-        year.setItems(s);
-        month = new ComboBox();
-        month.setPrefWidth(100);
-        ObservableList<String> q = FXCollections.observableArrayList();
-        q.add("JAN");q.add("FEB");q.add("MAR");q.add("APR");q.add("MAY");q.add("JUN");q.add("JUL");
-        q.add("AUG");q.add("SEP");q.add("OCT");q.add("NOV");q.add("DEC");
-        month.setItems(q);
-        day = new ComboBox();
-        ObservableList<String> w = FXCollections.observableArrayList();
-        w.add("1");w.add("2");w.add("3");w.add("4");w.add("5");w.add("6");w.add("7");
-        w.add("8");w.add("9");w.add("10");w.add("11");w.add("12");
-        w.add("13");w.add("14");w.add("15");w.add("16");w.add("17");w.add("18");w.add("19");
-        w.add("20");w.add("21");w.add("22");w.add("23");w.add("24");
-        w.add("25");w.add("26");w.add("27");w.add("28");w.add("29");w.add("30");w.add("31");
-        day.setItems(w);
-        day.setPrefWidth(100);
-        hour = new TextField();
-        hour.setPrefWidth(100);
-        minute = new TextField();
-        minute.setPrefWidth(100);
-        
-        
+        StackPane root = new StackPane(schedPicker);
         Label lblSchedule = new Label("Schedule: ");
         lblSchedule.setPrefHeight(30);
-        submitArea.getChildren().addAll(lblSchedule, year, month, day, hour, minute, btnSubmit);
+        submitArea.getChildren().addAll(lblSchedule, root, btnSubmit);
 
         border.setBottom(submitArea);
 
@@ -274,37 +244,37 @@ public class View extends Application {
         m.makeUsersActive();
         outerLoop:
         for (Person p : m.getPeople()) {
-            for(InactiveUser i : m.getInactiveUsers())
-            {
-                if (i.getUserId() == Integer.parseInt(p.getUserID()))
-                {
+            for (InactiveUser i : m.getInactiveUsers()) {
+                if (i.getUserId() == Integer.parseInt(p.getUserID())) {
                     continue outerLoop;
                 }
             }
             table.getItems().add(p);
             people.add(p);
             /*
-            if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
-                table.getItems().add(p);
-                people.add(p);
-            }
-            */
-            
+             if (!m.getInactiveUsers().contains(Integer.parseInt(p.getUserID()))) {
+             table.getItems().add(p);
+             people.add(p);
+             }
+             */
+
         }
         border.setCenter(table);
     }
 
-  
-    ArrayList<Integer> getScheduledUsers() {
+   ArrayList<Integer> getScheduledUsers() {
         return scheduledUsers;
     }
 
     void clearScheduledUsers() {
-            scheduledUsers.clear();
-            m.resetPostBool();
-        }
-    
+        scheduledUsers.clear();
+        m.resetPostBool();
+    }
 
+    public String getSchedule(){
+        System.out.println(asIsoDateTime);
+        return asIsoDateTime;        
+    }
     void determineScheduledUsers() {
         //scheduledUsers.add(Integer.parseInt(((Person)table.getSelectionModel().getSelectedItems()).getUserID()));
         //scheduledUsers.add(1);
@@ -317,76 +287,4 @@ public class View extends Application {
         }
 
     }
-
-    String getScheduleTime() {
-        int m =0;
-        if(month.getValue().equals("JAN"))
-        {
-            m = 1;
-        }
-        if(month.getValue().equals("FEB"))
-        {
-            m = 2;
-        }
-        if(month.getValue().equals("MAR"))
-        {
-            m = 3;
-        }
-        if(month.getValue().equals("APR"))
-        {
-            m = 4;
-        }
-        if(month.getValue().equals("MAY"))
-        {
-            m = 5;
-        }
-        if(month.getValue().equals("JUN"))
-        {
-            m = 6;
-        }
-        if(month.getValue().equals("JUL"))
-        {
-            m = 7;
-        }
-        if(month.getValue().equals("AUG"))
-        {
-            m = 8;
-        }
-        if(month.getValue().equals("SEP"))
-        {
-            m = 9;
-        }
-        if(month.getValue().equals("OCT"))
-        {
-            m = 10;
-        }
-        if(month.getValue().equals("NOV"))
-        {
-            m = 11;
-        }
-        if(month.getValue().equals("DEC"))
-        {
-            m = 12;
-        }
-        if(hour.getText().length() == 1 && minute.getText().length() == 1)
-        {
-            return "" + year.getValue() + "-" + m + "-" +
-                day.getValue() + "T0" + hour.getText() + ":0" + minute.getText() + ":00";
-        }
-        else if(hour.getText().length() == 1)
-        {
-            return "" + year.getValue() + "-" + m + "-" +
-                day.getValue() + "T0" + hour.getText() + ":" + minute.getText() + ":00";
-        }
-        else if(minute.getText().length() == 1)
-        {
-            return "" + year.getValue() + "-" + m + "-" +
-                day.getValue() + "T" + hour.getText() + ":0" + minute.getText() + ":00";
-        }
-        else {
-            return "" + year.getValue() + "-" + m + "-" +
-                day.getValue() + "T" + hour.getText() + ":" + minute.getText() + ":00";
-        }
-    }
-
 }
