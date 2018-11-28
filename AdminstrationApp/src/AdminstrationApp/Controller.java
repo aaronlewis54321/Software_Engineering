@@ -21,9 +21,7 @@ public class Controller {
         m = model;
     }
 
-    /*
-    *BUTTONS DOING THINGS THAT ARE SELF EXPLANATORY
-    */
+    
     public void btnExportDataAction() throws IOException {
         m.writeResponseToCSV();
     }

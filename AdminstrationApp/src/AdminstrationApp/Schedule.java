@@ -19,7 +19,6 @@ public class Schedule {
     private ArrayList<Integer> users;
 //    transient boolean sent;
     
-    //POJO for JSON
     public Schedule(String time, int x, ArrayList<Integer> y){
         send_at = time;
         message = x;
@@ -54,7 +53,6 @@ public class Schedule {
 
     /**
      * @param message the message to set
-     * Seemingly unnecessary at this point as we only have 1 message...
      */
     public void setMessage(int message) {
         this.message = message;

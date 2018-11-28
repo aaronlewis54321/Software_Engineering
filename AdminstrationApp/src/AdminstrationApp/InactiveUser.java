@@ -9,13 +9,19 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author aaron and MattyR
+ * @author aaron
  */
 public class InactiveUser {
 
@@ -50,17 +56,23 @@ public class InactiveUser {
             try {
                 while ((line = br.readLine()) != null) {
 
-                    // use comma as separator for ISO 8601 substring parse
+                    // use comma as separator
                     String scheduledString = line.substring(line.lastIndexOf(",") + 1);
+//                    System.out.println("scheduled time: "+ scheduledString);
+                    
                     Instant scheduledTime = Instant.parse(scheduledString);
-                    Instant reactivate = scheduledTime.plusSeconds(600); //10 minutes after scheduled
-                    Instant now = Instant.now();
+//                    System.out.println("scheduled time: "+ scheduledTime);
 
-                    //if now is more than 10 mins post schedule reactivate user
+                    Instant reactivate = scheduledTime.plusSeconds(600);
+//                    System.out.println("reactivate time: "+ reactivate);
+
+                    Instant now = Instant.now();
+//                    System.out.println("now time: "+ now);
+
                     if (now.isAfter(reactivate)) {
                         noLongerInactive = true;
                     } else {
-                        noLongerInactive = false; //else don't
+                        noLongerInactive = false;
                     }
 
                 }

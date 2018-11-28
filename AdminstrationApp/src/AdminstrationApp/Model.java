@@ -41,7 +41,7 @@ import javafx.scene.layout.Priority;
 
 /**
  *
- * @author alewis91 and mrinoldodododod
+ * @author alewis91
  */
 public class Model implements Serializable {
 
@@ -81,7 +81,6 @@ public class Model implements Serializable {
         //ReadGroupsFromDatabase();
     }
 
-    //Still don't totally understand all of these properties and Binding/Listeners
     public String getSampleProperty() {
         return sampleProperty;
     }
@@ -111,25 +110,20 @@ public class Model implements Serializable {
         con.setRequestProperty("User-Agent", USER_AGENT);
         con.setRequestProperty("Accept", "application/json");
         int responseCode = con.getResponseCode();
-        /*
-         *GETTTT
-         */
+        //System.out.println("GET Response Code :: " + responseCode);
         if (responseCode == HttpURLConnection.HTTP_OK) { // success
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     con.getInputStream()));
             String inputLine;
             StringBuffer response = new StringBuffer();
 
-            //read in response from REST endpoint
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
             in.close();
 
-            //maybe we'll need the response as a string one day? Let's store it
             String m = response.toString();
 
-            //Endpoint consumed, delicious
             ArrayList<String> a = new ArrayList<String>();
             int x = 0;
             boolean hitBracket = false;
@@ -150,15 +144,12 @@ public class Model implements Serializable {
                     break;
                 }
             }
-
-            //Parse data recieved. Use GSON to turn it into a POJO
             Gson g = new Gson();
             for (int i = 0; i < a.size(); i++) {
                 PersonGSON p = g.fromJson(a.get(i), PersonGSON.class);
                 people.add(new Person(p.first_name, p.last_name, p.phone_number, p.email, p.birth_date, p.id));
             }
 
-            //Something went wrong. ALERTT
         } else {
             System.out.println("GET request not worked");
             Alert alert = new Alert(AlertType.ERROR);
@@ -321,14 +312,16 @@ public class Model implements Serializable {
 
             Gson gson = new GsonBuilder().create();
             String scheduleJson = gson.toJson(schedule);
+//        System.out.println(scheduleJson);
 
             /**
-             * POSTtting *
+             * POSTing *
              */
             OutputStream output = postConn.getOutputStream();
             OutputStreamWriter outWriter = new OutputStreamWriter(output, "UTF-8");
             postConn.connect();
 
+//            outWriter.write("{  \"send_at\": \"2018-10-24T17:12:43.640Z\",  \"message\": 1,  \"users\": [1]}");
             outWriter.write(scheduleJson);
             outWriter.flush();
 
@@ -363,15 +356,13 @@ public class Model implements Serializable {
 
     }
 
-    //take a string input and arraylist, build a schedule, write it to database
-    //Maybe in future we will have more options for messages, hence the three parameters
+    //test for writing schedule to database, need to modify to alter time/message based on controllers
     public void scheduleUsers(String time, ArrayList<Integer> people) throws IOException {
         Schedule schedule = new Schedule(time, 1, people);
         writeScheduleToDatabase(schedule);
 
     }
 
-    //self explanetory
     public static boolean getPostBoolean() {
         return postSuccessful;
     }
@@ -381,7 +372,7 @@ public class Model implements Serializable {
     }
 
     //If schedule is accidentally sent, and we want to reactivate all users
-    //clears inactiveUsers.txt and inactiveUser arraylist. Brings them all backk
+    //clears inactiveUsers.txt
     public void makeAllUsersActive() {
         try {
             inactiveUsers.clear();
@@ -393,8 +384,6 @@ public class Model implements Serializable {
         }
     }
 
-    //Users should only have one messaged scheduled at a time. here make them 
-    //inactive and remove from tableView
     public void makeUsersInactive(ArrayList<Integer> people, String schedule) {
         if (postSuccessful) {
             for (Integer p : people) {
@@ -415,8 +404,6 @@ public class Model implements Serializable {
         return inactiveUsers;
     }
 
-    //AAAROn very nice
-    //Parse txt of inactive users so that list persists if program is exited
     private void readInactiveUsersFromFile() {
         BufferedReader br = null;
         try {
@@ -428,7 +415,6 @@ public class Model implements Serializable {
                 // use comma as separator
                 String[] inactiveUsersFromFile = line.split(",");
 
-                //add inactive to arraylist 
                 InactiveUser t = new InactiveUser(Integer.parseInt(inactiveUsersFromFile[0]), inactiveUsersFromFile[1]);
                 inactiveUsers.add(t);
 
@@ -462,7 +448,6 @@ public class Model implements Serializable {
             out.close();
         } catch (IOException e) {
             System.out.println("exception occurred" + e);
-
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Exception Dialog");
             alert.setHeaderText("Missing In Action");
@@ -471,7 +456,6 @@ public class Model implements Serializable {
             Exception ex = new FileNotFoundException("Could not find file inactiveUsers.txt");
 
             // Create expandable Exception.
-            //Ridiculously long ALERT dialog
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
@@ -500,8 +484,6 @@ public class Model implements Serializable {
         }
     }
 
-    //iterate through list and check boolean status. If it's been 10 minutes
-    //since they were scheduled to be messaged, REACTIVATE
     public void makeUsersActive() {
         Iterator<InactiveUser> i = inactiveUsers.iterator();
         while (i.hasNext()) {
