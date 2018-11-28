@@ -276,7 +276,7 @@ public class View extends Application {
     }
 
     public String getSchedule() {
-        System.out.println(asIsoDateTime);
+//        System.out.println(asIsoDateTime);
         return asIsoDateTime;
     }
 
