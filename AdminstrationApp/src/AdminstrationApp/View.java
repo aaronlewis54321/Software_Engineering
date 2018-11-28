@@ -45,7 +45,7 @@ import javafx.scene.control.Tooltip;
 
 /**
  *
- * @author alewis91
+ * @author alewis91 and lil bit by mRinoldo
  */
 public class View extends Application {
 

@@ -41,7 +41,7 @@ import javafx.scene.layout.Priority;
 
 /**
  *
- * @author alewis91
+ * @author alewis91 and mrinoldodododod
  */
 public class Model implements Serializable {
 

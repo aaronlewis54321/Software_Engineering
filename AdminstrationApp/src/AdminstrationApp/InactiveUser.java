@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author aaron
+ * @author aaron and MattyR
  */
 public class InactiveUser {
 
