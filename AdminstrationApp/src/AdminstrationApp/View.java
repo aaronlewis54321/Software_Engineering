@@ -8,7 +8,11 @@ package AdminstrationApp;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
@@ -62,15 +66,13 @@ public class View extends Application {
     ArrayList<Person> people;
     private ArrayList<Integer> scheduledUsers;
     private String asIsoDateTime;
-    
+
     @Override
     public void start(Stage primaryStage) throws IOException {
         m = new Model();
         c = new Controller(m);
         people = new ArrayList<Person>();
         scheduledUsers = new ArrayList<Integer>();
-        
-
 
         Person l = new Person("", "", "", "", "", "4");
         ArrayList<Person> list = new ArrayList<Person>();
@@ -79,7 +81,6 @@ public class View extends Application {
         String localDir = System.getProperty("user.dir");
         primaryStage.getIcons().add(new Image("file:taskbar_image.png"));
 
-    
         Button btnRefresh = new Button();
         btnRefresh.setText("Refresh");
         btnRefresh.setOnAction(e -> c.btnRefreshAction(this));
@@ -177,8 +178,7 @@ public class View extends Application {
         //border.setLeft(vboxLeft);
         DateTimePicker schedPicker = new DateTimePicker();
         schedPicker.setDateTimeValue(LocalDateTime.now());
-                
-        
+
         HBox submitArea = new HBox(10);
         submitArea.setPadding(new Insets(0, 0, 0, 130));
         //submitArea.setHgap(100);
@@ -187,8 +187,12 @@ public class View extends Application {
         btnSubmit.setPrefWidth(100);
         btnSubmit.setOnAction(e -> {
             try {
-                asIsoDateTime = schedPicker.getDateTimeValue().format(DateTimeFormatter.ISO_DATE_TIME);
-//                LocalDateTime scheduleTime = schedPicker.getDateTimeValue();
+
+                LocalDateTime ldt = schedPicker.getDateTimeValue();
+                ZonedDateTime ldtZoned = ldt.atZone(ZoneId.systemDefault());
+                ZonedDateTime utcZoned = ldtZoned.withZoneSameInstant(ZoneOffset.UTC);
+                asIsoDateTime = utcZoned.format(DateTimeFormatter.ISO_DATE_TIME);
+
                 c.btnSubmitAction(this);
             } catch (IOException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
@@ -262,7 +266,7 @@ public class View extends Application {
         border.setCenter(table);
     }
 
-   ArrayList<Integer> getScheduledUsers() {
+    ArrayList<Integer> getScheduledUsers() {
         return scheduledUsers;
     }
 
@@ -271,15 +275,12 @@ public class View extends Application {
         m.resetPostBool();
     }
 
-    public String getSchedule(){
+    public String getSchedule() {
         System.out.println(asIsoDateTime);
-        return asIsoDateTime;        
+        return asIsoDateTime;
     }
-    void determineScheduledUsers() {
-        //scheduledUsers.add(Integer.parseInt(((Person)table.getSelectionModel().getSelectedItems()).getUserID()));
-        //scheduledUsers.add(1);
-        //scheduledUsers.add(2);
 
+    void determineScheduledUsers() {
         for (Person p : people) {
             if (p.getCheckBox().isSelected()) {
                 scheduledUsers.add(Integer.parseInt(p.getUserID()));
