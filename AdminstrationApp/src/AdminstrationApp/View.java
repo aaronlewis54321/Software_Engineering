@@ -204,8 +204,8 @@ public class View extends Application {
         month.setItems(q);
         day = new ComboBox();
         ObservableList<String> w = FXCollections.observableArrayList();
-        w.add("01");w.add("02");w.add("03");w.add("04");w.add("05");w.add("06");w.add("07");
-        w.add("08");w.add("09");w.add("10");w.add("11");w.add("12");
+        w.add("1");w.add("2");w.add("3");w.add("4");w.add("5");w.add("6");w.add("7");
+        w.add("8");w.add("9");w.add("10");w.add("11");w.add("12");
         w.add("13");w.add("14");w.add("15");w.add("16");w.add("17");w.add("18");w.add("19");
         w.add("20");w.add("21");w.add("22");w.add("23");w.add("24");
         w.add("25");w.add("26");w.add("27");w.add("28");w.add("29");w.add("30");w.add("31");
