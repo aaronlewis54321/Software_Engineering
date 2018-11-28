@@ -5,83 +5,68 @@
  */
 package AdminstrationApp;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.DateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author aaron
  */
 public class InactiveUser {
-
     int userId;
     String schedule;
-    public boolean noLongerInactive;
-
     public InactiveUser(int p, String s) {
         userId = p;
         schedule = s;
     }
-
-    public String getSchedule() {
+    
+    public String getSchedule()
+    {
         return schedule;
     }
-
-    public int getUserId() {
+    
+    public int getUserId()
+    {
         return userId;
     }
-
-    public String print() {
+    
+    public String print()
+    {
         return userId + "," + schedule;
     }
-
-    public boolean noLongerInactive() {
-        try {
-            BufferedReader br = null;
-
-            String localDir = System.getProperty("user.dir");
-            br = new BufferedReader(new FileReader(localDir + "\\src\\Resources\\inactiveUsers.txt"));
-            String line;
-            try {
-                while ((line = br.readLine()) != null) {
-
-                    // use comma as separator
-                    String scheduledString = line.substring(line.lastIndexOf(",") + 1);
-//                    System.out.println("scheduled time: "+ scheduledString);
-                    
-                    Instant scheduledTime = Instant.parse(scheduledString);
-//                    System.out.println("scheduled time: "+ scheduledTime);
-
-                    Instant reactivate = scheduledTime.plusSeconds(600);
-//                    System.out.println("reactivate time: "+ reactivate);
-
-                    Instant now = Instant.now();
-//                    System.out.println("now time: "+ now);
-
-                    if (now.isAfter(reactivate)) {
-                        noLongerInactive = true;
-                    } else {
-                        noLongerInactive = false;
-                    }
-
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(InactiveUser.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(InactiveUser.class.getName()).log(Level.SEVERE, null, ex);
+    
+    public Boolean noLongerInactive()
+    {
+        GregorianCalendar sched = new GregorianCalendar();  //Need to add timezone stuff
+        Scanner scan = new Scanner(schedule);
+        String year = "" + schedule.charAt(0) + schedule.charAt(1) + schedule.charAt(2) + schedule.charAt(3);
+        
+        String month = "" + schedule.charAt(5) + schedule.charAt(6);
+        
+        String day = "" + schedule.charAt(8) + schedule.charAt(9);
+       
+        String hour = "" + schedule.charAt(11) + schedule.charAt(12);
+       
+        String minute = "" + schedule.charAt(14) + schedule.charAt(15);
+       
+        String second = "" + schedule.charAt(17) + schedule.charAt(18);
+       if(Integer.parseInt(minute) < 50)
+       {
+        sched.set(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(day), Integer.parseInt(hour), Integer.parseInt(minute)+10, Integer.parseInt(second));
+       }
+       else {
+           sched.set(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(day), Integer.parseInt(hour)+1, Integer.parseInt(minute)-50, Integer.parseInt(second));
+       }
+        GregorianCalendar now = new GregorianCalendar();
+        
+        if (now.after(sched))
+        {
+            return true;
         }
-        return noLongerInactive;
+        return false;
     }
 }
