@@ -81,4 +81,8 @@ public class Person {
     {
         return checkBox;
     }
+    public boolean isSelected()
+    {
+        return checkBox.isSelected();
+    }
 }
